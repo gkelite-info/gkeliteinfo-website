@@ -1,0 +1,132 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+@import url('./styles/bootstrap-icons.css');
+@import url('./styles/bootstrap.min.css');
+@import url('./styles/main.css');
+@import url('./styles/aos.css');
+@import url('./styles/swiper-bundle.min.css');
+@import url('./styles/glightbox.min.css');
+
+* {
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    font-family: 'Poppins', Arial, sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    text-decoration: none;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+}
+
+p {
+    font-weight: 400;
+    font-family: 'Poppins', sans-serif !important;
+}
+
+a {
+    text-decoration: none !important;
+    font-family: 'Poppins', sans-serif !important;
+    color: black !important;
+}
+
+.services-list a.active {
+    color: green !important;
+}
+
+a.custom-contact-btn {
+    color: white !important;
+}
+
+.custom-social-links {
+    color: white !important;
+}
+
+.custom-social-links:hover {
+    color: green !important;
+}
+
+.custom-useful-links {
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.custom-services-links {
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+
+a.custom-gkelite-link {
+    color: #1BBD36 !important;
+}
+
+.slide-title-services {
+    color: white;
+}
+
+.cursor-pointer {
+    cursor: pointer !important;
+}
+
+.navmenu a.active {
+    position: relative;
+    color: green !important;
+    font-weight: 600;
+}
+
+.navmenu a.active::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 15px;
+    height: 2px;
+    background-color: green !important;
+}
+
+#hero .carousel-item .container {
+    position: absolute !important;
+    top: 78%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    z-index: 2;
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    #hero .carousel-item .container {
+        position: relative !important;
+        top: 45% !important;
+        left: -10% !important;
+        transform: none !important;
+        color: white;
+        padding: 1rem;
+        text-align: center;
+        width: 90%;
+    }
+}
+
+.card {
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.card:hover {
+    transform: scale(1.03);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.sitename {
+    font-family: 'Poppins', sans-serif !important;
+}
+
+.carousel-caption {
+    position: absolute;
+}
