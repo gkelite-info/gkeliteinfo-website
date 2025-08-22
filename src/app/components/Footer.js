@@ -13,6 +13,7 @@ const Footer = () => {
                                 <span className="sitename">GKELITE</span>
                             </Link>
                             <div className="footer-contact pt-3">
+                                <p>Opp: Pillar No. 1421 Street,</p>
                                 <p>6-3-865/1/2, 4th Floor Greenland Apartments,</p>
                                 {/* <p> Opp: Domino's, Raj Bhavan Road</p> */}
                                 {/* <p>Raj Bhavan Road</p> */}
