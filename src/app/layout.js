@@ -6,6 +6,7 @@ import BootstrapClient from "./components/BootstrapClient";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "aos/dist/aos.css";
 import AOSProvider from "./aos-provider";
+import { icons } from "lucide-react";
 
 
 // export const metadata = {
@@ -16,7 +17,7 @@ import AOSProvider from "./aos-provider";
 export const metadata = {
   title: {
     default: "GKELITE | HR, BPO & Business Solutions",
-    template: "%s | GKELITE",
+    template: "%s | GKELITE"
   },
   description:
     "GKELITE provides HR consultancy, recruitment, BPO, AI services, and business solutions in Hyderabad and worldwide.",
@@ -29,6 +30,9 @@ export const metadata = {
     "business consulting",
     "Hyderabad HR",
   ],
+  icons: {
+    icon: "/gkLogo.jpg",
+  },
 
   openGraph: {
     title: "GKELITE | HR, BPO & Business Solutions",

@@ -145,8 +145,10 @@ const Header = () => {
                     }`}
             >
                 <div className="container position-relative d-flex align-items-center">
-                    <div className="logo d-flex align-items-center me-auto cursor-pointer" onClick={scrollToTop}>
-                        <h1 className="sitename_1 cursor-pointer fw-bold">GKELITE</h1>
+                    <div className="w-100 d-flex align-items-center cursor-pointer" onClick={scrollToTop}>
+                        {/* <h1 className="sitename_1 cursor-pointer fw-bold">GKELITE</h1> */}
+                        <img src="/gkLogo.png" alt="gkLogo.png" style={{ width: "10%" }} />
+
                     </div>
 
                     <nav id="navmenu" className="navmenu">

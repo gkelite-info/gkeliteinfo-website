@@ -16,7 +16,7 @@ const HeroCarousel = () => {
         "GKelite-Info Digital harnesses the power of AI to deliver cutting-edge generative AI models, offering innovative solutions tailored to your unique challenges. Empower your business with intelligent, results-driven strategies designed to transform your vision into reality!",
     },
     {
-      src: "/assets/img/hero-carousel/digital_marketing.jpg",
+      src: "/assets/img/hero-carousel/digital_marketing2.jpg",
       alt: "Digital Marketing Solutions",
       title: "Dynamic Digital Marketing Solutions",
       titleClass: 'slide-title-services',
