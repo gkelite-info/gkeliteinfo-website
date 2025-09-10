@@ -10,7 +10,7 @@ const Footer = () => {
                     <div className="row gy-4">
                         <div className="col-lg-4 col-md-6 footer-about bg-green-400">
                             <Link href="https://maps.app.goo.gl/K7L8txP4VR5cpA3MA" className="logo d-flex align-items-center">
-                                <img src='/gkLogoDark.png' alt='gkLogoDark.png'/>
+                                <img src='/gkLogoDark.png' alt='gkLogoDark.png' />
                             </Link>
                             <div className="footer-contact pt-3 bg-blue-200">
                                 <p>Opp: Pillar No. 1421 Street,</p>
@@ -19,11 +19,12 @@ const Footer = () => {
                                 {/* <p>Raj Bhavan Road</p> */}
                                 <p>Begumpet, Hyderabad, Telangana</p>
                                 <p>500016.</p>
-                                <p className="mt- bg-red-600"><strong>Phone:</strong> <span>+91 9000266832, <br/><span className='ml-22 bg-red-400'>+91 7093256562</span></span>
+                                <p className="mt- bg-red-600"><strong>Phone:</strong> <span>+91 9000266832, <br /><span style={{marginLeft:'52px'}}>+91 7093256562</span></span>
                                 </p>
-                                    
 
-                                <p><strong>Email:</strong> <span>gkeliteinfo@gmail.com <br/> business@gkeliteinfo.com <br/> hr@gkeliteinfo.com</span></p>
+
+                                <p><strong>Email:</strong> <span>gkeliteinfo@gmail.com,</span></p>
+                                <p style={{ marginLeft: '45px' }}>business@gkeliteinfo.com,</p><p style={{ marginLeft: '45px' }}>hr@gkeliteinfo.com</p>
                             </div>
                             <div className="social-links d-flex mt-4">
                                 <Link href="https://x.com/GkeliteInfo" target="_blank" className='custom-social-links'><i className="bi bi-twitter-x"></i></Link>

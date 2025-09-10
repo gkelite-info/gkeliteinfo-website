@@ -31,7 +31,7 @@ export const metadata = {
     "Hyderabad HR",
   ],
   icons: {
-    icon: "/gkLogo.jpg",
+    icon: "/gklogo.jpg",
   },
 
   openGraph: {
