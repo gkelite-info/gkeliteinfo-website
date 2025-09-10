@@ -75,7 +75,7 @@ const page = () => {
             
             <div className="col-lg-7" data-aos="fade-up" data-aos-delay="200">
               <Image 
-                src="/assets/img/hero-carousel/digital_marketing.jpg" 
+                src="/assets/img/hero-carousel/dm.jpg" 
                 alt="Dynamic Digital Marketing Solutions" 
                 title="Dynamic Digital Marketing Solutions" 
                 className="img-fluid services-img" 
