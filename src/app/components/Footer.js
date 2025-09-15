@@ -15,14 +15,10 @@ const Footer = () => {
                             <div className="footer-contact pt-3 bg-blue-200">
                                 <p>Opp: Pillar No. 1421 Street,</p>
                                 <p>6-3-865/1/2, 4th Floor Greenland Apartments,</p>
-                                {/* <p> Opp: Domino's, Raj Bhavan Road</p> */}
-                                {/* <p>Raj Bhavan Road</p> */}
                                 <p>Begumpet, Hyderabad, Telangana</p>
                                 <p>500016.</p>
-                                <p className="mt- bg-red-600"><strong>Phone:</strong> <span>+91 9000266832, <br /><span style={{marginLeft:'52px'}}>+91 7093256562</span></span>
+                                <p className="mt- bg-red-600"><strong>Phone:</strong> <span>+91 9000266832, <br /><span style={{ marginLeft: '52px' }}>+91 7093256562</span></span>
                                 </p>
-
-
                                 <p><strong>Email:</strong> <span>gkeliteinfo@gmail.com,</span></p>
                                 <p style={{ marginLeft: '45px' }}>business@gkeliteinfo.com,</p><p style={{ marginLeft: '45px' }}>hr@gkeliteinfo.com</p>
                             </div>
