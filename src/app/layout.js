@@ -16,7 +16,7 @@ import { icons } from "lucide-react";
 
 export const metadata = {
   title: {
-    default: "GKELITE | HR, BPO & Business Solutions",
+    default: "GKELITE | AI SERVICES, HRMS, Website Development, Automations, Digital Marketing",
     template: "%s | GKELITE"
   },
   description:
