@@ -14,7 +14,7 @@ const Footer = () => {
                             </Link>
                             <div className="footer-contact pt-3 bg-blue-200">
                                 <p>Opp: Pillar No. 1421 Street,</p>
-                                <p>6-3-865/1/2, 4th Floor Greenland Apartments,</p>
+                                <p>6-3-865/1/2, Flat No: 301, 4th Floor Greenland Apartments,</p>
                                 <p>Begumpet, Hyderabad, Telangana</p>
                                 <p>500016.</p>
                                 <p className="mt- bg-red-600"><strong>Phone:</strong> <span>+91 9000266832, <br /><span style={{ marginLeft: '52px' }}>+91 7093256562</span></span>
