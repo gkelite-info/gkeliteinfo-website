@@ -187,7 +187,7 @@ const Header = () => {
                                     Contact
                                 </Link>
                             </li>
-                            <li className="px-3">
+                            {/* <li className="px-3">
                                 {isLoggedIn ? (
                                     <button
                                         className="d-block btn btn-primary d-lg-none"
@@ -204,13 +204,21 @@ const Header = () => {
                                         Login
                                     </button>
                                 )}
+                            </li> */}
+                            <li>
+                                <Link
+                                    href="/review"
+                                    className={isActive("/review") ? "active" : ""}
+                                >
+                                    Review
+                                </Link>
                             </li>
                         </ul>
                         <i className="mobile-nav-toggle d-xl-none bi bi-list"
                         ></i>
                     </nav>
 
-                    {isLoggedIn ? (
+                    {/* {isLoggedIn ? (
                         <button
                             className="btn btn-primary d-none d-lg-block"
                             onClick={handleLogout}
@@ -225,7 +233,7 @@ const Header = () => {
                         >
                             Login
                         </button>
-                    )}
+                    )} */}
                 </div>
             </header>
 

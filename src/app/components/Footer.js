@@ -69,9 +69,9 @@ const Footer = () => {
                     </div>
 
                     <div className="container copyright text-center mt-4">
-                        <p>© <span>Copyright</span> <strong className="px-1 sitename">GKelite</strong> <span>All Rights Reserved</span></p>
+                        <p>© {new Date().getFullYear()} <span>Copyright</span> <strong className="px-1 sitename">GK Elite-Info.</strong> <span>All rights reserved</span></p>
                         <div className="credits">
-                            Designed by <Link href="https://bootstrapmade.com/" className='custom-gkelite-link'>GKelite-IT</Link>
+                            Designed by <Link href="" className='custom-gkelite-link'>GK Elite-Info-IT</Link>
                         </div>
                     </div>
 

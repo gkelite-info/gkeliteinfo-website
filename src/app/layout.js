@@ -7,6 +7,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "aos/dist/aos.css";
 import AOSProvider from "./aos-provider";
 import { icons } from "lucide-react";
+import { Toaster } from "react-hot-toast";
 
 
 // export const metadata = {
@@ -71,6 +72,10 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body>
+        <Toaster
+          position="top-right"
+          reverseOrder={false}
+        />
         <BootstrapClient />
         <Header />
         <AOSProvider>
