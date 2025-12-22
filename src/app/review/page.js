@@ -2,7 +2,7 @@
 import toast from "react-hot-toast";
 import AOSWrapper from "../components/aosWrapper";
 import { useState } from "react";
-import { createReview } from "../api/supabase/reviewAPI";
+import { createReview } from "../api/supabase/reviewAPI"; 
 
 const Review = () => {
 
