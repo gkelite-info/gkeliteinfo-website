@@ -36,6 +36,7 @@ const Footer = () => {
                                 <li><Link href="/" className='custom-useful-links'>Home</Link></li>
                                 <li><Link href="/about" className='custom-useful-links'>About us</Link></li>
                                 <li><Link href="/services" className='custom-useful-links'>Services</Link></li>
+                                <li><Link href="https://tektoncampus.com/landing_page" target='_blank' rel='noopener noreferrer' className='custom-useful-links'>Tekton Campus</Link></li>
                                 <li><Link href="/terms-of-services" className='custom-useful-links'>Terms of service</Link></li>
                                 {/* <li><Link href="#">Privacy policy</Link></li> */}
                             </ul>
