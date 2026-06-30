@@ -153,6 +153,18 @@ const Header = () => {
 
                     <nav id="navmenu" className="navmenu">
                         <ul className="pt-2">
+                            <li className="dropdown">
+                                <Link href="/admissions" className={isActive("/admissions") ? "active" : ""}>
+                                    <span>Admissions</span> <i className="bi bi-chevron-down toggle-dropdown"></i>
+                                </Link>
+                                <ul>
+                                    <li><Link href="/bcca" target="_blank">Badruka College of Commerce and Arts</Link></li>
+                                    <li><Link href="/bbcit" target="_blank">Bankatlal Badruka College for Information Technology</Link></li>
+                                    <li><Link href="/bcpgc" target="_blank">Badruka College Post Graduate Centre (MBA)</Link></li>
+                                    <li><Link href="/bjcg" target="_blank">Badruka Junior College for Girls</Link></li>
+                                    <li><Link href="/bbsmd" target="_blank">Bansilal Badruka School of Music and Dance</Link></li>
+                                </ul>
+                            </li>
                             <li>
                                 <Link href="/" className={isActive("/") ? "active" : ""}>
                                     Home
