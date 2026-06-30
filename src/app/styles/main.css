@@ -378,8 +378,8 @@ strong {
 
   .navmenu .dropdown ul {
     margin: 0;
-    padding: 10px 0;
-    background: var(--nav-dropdown-background-color);
+    padding: 6px;
+    background: #ffffff;
     display: block;
     position: absolute;
     visibility: hidden;
@@ -387,30 +387,51 @@ strong {
     top: 130%;
     opacity: 0;
     transition: 0.3s;
-    border-radius: 4px;
+    border-radius: 12px;
     z-index: 99;
-    box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e5e7eb;
   }
 
   .navmenu .dropdown ul li {
-    min-width: 200px;
+    min-width: 220px;
   }
 
   .navmenu .dropdown ul a {
-    padding: 10px 20px;
-    font-size: 15px;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 500;
     text-transform: none;
-    color: var(--nav-dropdown-color);
+    color: #000000;
+    background-color: transparent;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 8px;
+    transition: all 0.15s ease;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .navmenu .dropdown ul a i {
     font-size: 12px;
   }
 
+  .navmenu .dropdown ul a::after {
+    content: "";
+    font-weight: bold;
+    color: #43C17A;
+    font-size: 14px;
+  }
+
+  .navmenu .dropdown ul a:hover::after,
+  .navmenu .dropdown ul .active:hover::after,
+
   .navmenu .dropdown ul a:hover,
   .navmenu .dropdown ul .active:hover,
   .navmenu .dropdown ul li:hover>a {
-    color: var(--nav-dropdown-hover-color);
+    color: #43C17A;
+    background-color: #D6F1E2;
   }
 
   .navmenu .dropdown:hover>ul {
