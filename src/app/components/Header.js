@@ -128,6 +128,21 @@ const Header = () => {
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
+    useEffect(() => {
+        try {
+            fetch('/api/analytics', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    eventType: 'SITE_VISIT',
+                    path: pathname || '/'
+                })
+            });
+        } catch (error) {
+            console.error("Analytics tracking failed:", error);
+        }
+    }, [pathname]);
+
     const isActive = (href) => pathname === href;
 
     const scrollToTop = () => {

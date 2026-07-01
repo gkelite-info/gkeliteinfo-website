@@ -66,6 +66,22 @@ export default function ApplicationForm({ params }) {
         setMounted(true);
     }, []);
 
+    useEffect(() => {
+        try {
+            fetch('/api/analytics', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    eventType: 'FORM_OPEN',
+                    formType: formType,
+                    path: window.location.pathname
+                })
+            });
+        } catch (error) {
+            console.error("Analytics tracking failed:", error);
+        }
+    }, [formType]);
+
     // Handle State change
     const handleStateChange = (e) => {
         const stateCode = e.target.value;
@@ -177,6 +193,22 @@ export default function ApplicationForm({ params }) {
 
             if (result.success) {
                 toast.success('Application submitted successfully!', { id: toastId });
+
+                // Track Form Submit Analytics
+                try {
+                    fetch('/api/analytics', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            eventType: 'FORM_SUBMIT',
+                            formType: formType,
+                            applicationId: result.applicationId,
+                            path: window.location.pathname
+                        })
+                    });
+                } catch (error) {
+                    console.error("Analytics tracking failed:", error);
+                }
 
                 // Trigger email notification
                 try {
