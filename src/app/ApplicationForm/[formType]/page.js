@@ -129,7 +129,7 @@ export default function ApplicationForm({ params }) {
                 emailId: data.emailId,
                 nationality: data.nationality,
                 category: data.category,
-                aadhaarNumber: data.aadhaarNumber || null,
+                aadhaarNumber: data.aadhaarNumber ? data.aadhaarNumber.replace(/\s/g, '') : null,
                 postalAddress: data.postalAddress,
                 state: data.state,
                 city: data.city,
@@ -139,9 +139,9 @@ export default function ApplicationForm({ params }) {
                 is_deleted: false,
             };
 
-            // 3. Handle Educational Qualifications (IX and X)
+            // 3. Handle Educational Qualifications
             const qualifications = [];
-            const levels = ['IX', 'X'];
+            const levels = data.applicationFor === 'PG' ? ['Degree'] : ['IX', 'X'];
 
             for (const level of levels) {
                 const school = formData.get(`school_${level}`);
@@ -157,7 +157,7 @@ export default function ApplicationForm({ params }) {
                     qualifications.push({
                         level: level,
                         schoolOrCollege: school,
-                        boardOrUniversity: formData.get(`board_${level}`),
+                        boardOrUniversity: formData.get(`board_${level}`) || 'N/A',
                         passingYear: formData.get(`year_${level}`),
                         gradeOrPercentage: formData.get(`grade_${level}`),
                         medium: formData.get(`medium_${level}`),
@@ -168,20 +168,22 @@ export default function ApplicationForm({ params }) {
 
             // 4. Handle Entrance Exam (if provided)
             let entranceExam = null;
-            const entranceCertFile = formData.get('entranceCertificate');
-            if (entranceCertFile && entranceCertFile.size > 0) {
-                let certUrl = '';
-                const certName = `${Date.now()}_entrance_${entranceCertFile.name}`;
-                const uploadRes = await uploadApplicationFile(entranceCertFile, 'application-files', `entrance/${certName}`);
-                if (uploadRes.success) certUrl = uploadRes.url;
+            if (data.applicationFor === 'PG') {
+                const entranceCertFile = formData.get('entranceCertificate');
+                if (entranceCertFile && entranceCertFile.size > 0) {
+                    let certUrl = '';
+                    const certName = `${Date.now()}_entrance_${entranceCertFile.name}`;
+                    const uploadRes = await uploadApplicationFile(entranceCertFile, 'application-files', `entrance/${certName}`);
+                    if (uploadRes.success) certUrl = uploadRes.url;
 
-                entranceExam = {
-                    examName: 'ICET', // Defaulting based on schema, can be made dynamic
-                    htNumber: 'N/A', // Placeholder as it wasn't in form UI
-                    rank: 0, // Placeholder
-                    year: new Date().toISOString().split('T')[0], // Placeholder
-                    certificateUrl: certUrl
-                };
+                    entranceExam = {
+                        examName: formData.get('entranceExamName') || 'ICET',
+                        htNumber: formData.get('entranceHtNumber') || 'N/A',
+                        rank: parseInt(formData.get('entranceRank'), 10) || 0,
+                        year: formData.get('entranceYear') || new Date().toISOString().split('T')[0],
+                        certificateUrl: certUrl
+                    };
+                }
             }
 
             // 5. Save everything
@@ -286,7 +288,7 @@ export default function ApplicationForm({ params }) {
         const { lead, qualifications } = submittedData;
         return (
             <main className="bg-light py-5" style={{ minHeight: '100vh' }}>
-                <ApplicationSummary 
+                <ApplicationSummary
                     lead={lead}
                     qualifications={qualifications}
                     title={title}
@@ -362,7 +364,6 @@ export default function ApplicationForm({ params }) {
                                 </CustomSelect>
                             </div>
 
-                            {/* Names */}
                             <div className="col-md-6">
                                 <label className="form-label">First Name:<span className="required-asterisk">*</span></label>
                                 <input type="text" name="firstName" className="form-control" required />
@@ -372,7 +373,6 @@ export default function ApplicationForm({ params }) {
                                 <input type="text" name="lastName" className="form-control" required />
                             </div>
 
-                            {/* Parents */}
                             <div className="col-md-6">
                                 <label className="form-label">Father's Name:<span className="required-asterisk">*</span></label>
                                 <input type="text" name="fathersName" className="form-control" required />
@@ -426,7 +426,19 @@ export default function ApplicationForm({ params }) {
                             {showAadhaar && (
                                 <div className="col-md-12">
                                     <label className="form-label">Aadhaar Number:<span className="required-asterisk">*</span></label>
-                                    <input type="text" name="aadhaarNumber" className="form-control" required />
+                                    <input
+                                        type="text"
+                                        name="aadhaarNumber"
+                                        className="form-control"
+                                        maxLength="19"
+                                        onInput={(e) => {
+                                            let val = e.target.value.replace(/\D/g, ''); // keep only digits
+                                            val = val.substring(0, 19); // max 19 digits
+                                            let formatted = val.match(/.{1,4}/g)?.join(' ') || val;
+                                            e.target.value = formatted;
+                                        }}
+                                        required
+                                    />
                                 </div>
                             )}
 
@@ -486,75 +498,125 @@ export default function ApplicationForm({ params }) {
                         {/* Educational Qualification */}
                         <div className="mt-2 border rounded">
                             <div className="section-header">
-                                EDUCATIONAL QUALIFICATION
+                                EDUCATIONAL QUALIFICATION  <span className='required-asterisk'>*</span>
                             </div>
                             <div className="p-3 overflow-auto">
                                 <table className="table table-borderless align-middle mb-0" style={{ minWidth: '700px' }}>
-                                    <thead className="bg-light" style={{ fontSize: '13px' }}>
-                                        <tr>
-                                            <th>Class</th>
-                                            <th>School</th>
-                                            <th>Board</th>
-                                            <th>Year</th>
-                                            <th>Grade/Percentage(%)</th>
-                                            <th>Medium</th>
-                                            <th>Certificate (pdf only)</th>
-                                        </tr>
-                                    </thead>
+                                    {applicationFor === 'PG' ? (
+                                        <thead className="bg-light" style={{ fontSize: '13px' }}>
+                                            <tr>
+                                                <th>Degree<span className="required-asterisk">*</span></th>
+                                                <th>College/University<span className="required-asterisk">*</span></th>
+                                                <th>Year<span className="required-asterisk">*</span></th>
+                                                <th>Percentage / Division<span className="required-asterisk">*</span></th>
+                                                <th>Medium<span className="required-asterisk">*</span></th>
+                                                <th>Certificate (pdf/jpg)<span className="required-asterisk">*</span></th>
+                                            </tr>
+                                        </thead>
+                                    ) : (
+                                        <thead className="bg-light" style={{ fontSize: '13px' }}>
+                                            <tr>
+                                                <th>Class</th>
+                                                <th>School</th>
+                                                <th>Board</th>
+                                                <th>Year</th>
+                                                <th>Grade/Percentage(%)</th>
+                                                <th>Medium</th>
+                                                <th>Certificate (pdf only)</th>
+                                            </tr>
+                                        </thead>
+                                    )}
                                     <tbody>
-                                        <tr>
-                                            <td className="fw-bold">IX</td>
-                                            <td><input type="text" name="school_IX" className="form-control form-control-sm" required /></td>
-                                            <td><input type="text" name="board_IX" className="form-control form-control-sm" required /></td>
-                                            <td><input type="date" name="year_IX" className="form-control form-control-sm" required /></td>
-                                            <td><input type="text" name="grade_IX" className="form-control form-control-sm" required /></td>
-                                            <td>
-                                                <CustomSelect name="medium_IX" className="form-select-sm" style={{ paddingRight: '1.5rem' }} required>
-                                                    <option value="">Select</option>
-                                                    <option value="Telugu">Telugu</option>
-                                                    <option value="English">English</option>
-                                                    <option value="Hindi">Hindi</option>
-                                                    <option value="Urdu">Urdu</option>
-                                                </CustomSelect>
-                                            </td>
-                                            <td><input type="file" name="certificate_IX" className="form-control form-control-sm" accept=".pdf" required /></td>
-                                        </tr>
-                                        <tr>
-                                            <td className="fw-bold">X</td>
-                                            <td><input type="text" name="school_X" className="form-control form-control-sm" required /></td>
-                                            <td><input type="text" name="board_X" className="form-control form-control-sm" required /></td>
-                                            <td><input type="date" name="year_X" className="form-control form-control-sm" required /></td>
-                                            <td><input type="text" name="grade_X" className="form-control form-control-sm" required /></td>
-                                            <td>
-                                                <CustomSelect name="medium_X" className="form-select-sm" style={{ paddingRight: '1.5rem' }} required>
-                                                    <option value="">Select</option>
-                                                    <option value="Telugu">Telugu</option>
-                                                    <option value="English">English</option>
-                                                    <option value="Hindi">Hindi</option>
-                                                    <option value="Urdu">Urdu</option>
-                                                </CustomSelect>
-                                            </td>
-                                            <td><input type="file" name="certificate_X" className="form-control form-control-sm" accept=".pdf" required /></td>
-                                        </tr>
+                                        {applicationFor === 'PG' ? (
+                                            <tr>
+                                                <td><input type="text" name="school_Degree" className="form-control form-control-sm" placeholder="e.g. B.Com" required /></td>
+                                                <td><input type="text" name="board_Degree" className="form-control form-control-sm" required /></td>
+                                                <td><input type="date" name="year_Degree" className="form-control form-control-sm" required /></td>
+                                                <td><input type="number" name="grade_Degree" className="form-control form-control-sm" min="0" max="100" step="0.01" onInput={(e) => { if (e.target.value > 100) e.target.value = 100; if (e.target.value < 0) e.target.value = 0; }} required /></td>
+                                                <td>
+                                                    <CustomSelect name="medium_Degree" className="form-select-sm" style={{ paddingRight: '1.5rem' }} required>
+                                                        <option value="">Select Medium</option>
+                                                        <option value="Telugu">Telugu</option>
+                                                        <option value="English">English</option>
+                                                        <option value="Hindi">Hindi</option>
+                                                        <option value="Urdu">Urdu</option>
+                                                    </CustomSelect>
+                                                </td>
+                                                <td><input type="file" name="certificate_Degree" className="form-control form-control-sm" accept=".pdf,.jpg,.jpeg" required /></td>
+                                            </tr>
+                                        ) : (
+                                            <>
+                                                <tr>
+                                                    <td className="fw-bold">X</td>
+                                                    <td><input type="text" name="school_X" className="form-control form-control-sm" required /></td>
+                                                    <td><input type="text" name="board_X" className="form-control form-control-sm" required /></td>
+                                                    <td><input type="date" name="year_X" className="form-control form-control-sm" required /></td>
+                                                    <td><input type="number" name="grade_X" className="form-control form-control-sm" min="0" max="100" step="0.01" onInput={(e) => { if (e.target.value > 100) e.target.value = 100; if (e.target.value < 0) e.target.value = 0; }} required /></td>
+                                                    <td>
+                                                        <CustomSelect name="medium_X" className="form-select-sm" style={{ paddingRight: '1.5rem' }} required>
+                                                            <option value="">Select</option>
+                                                            <option value="Telugu">Telugu</option>
+                                                            <option value="English">English</option>
+                                                            <option value="Hindi">Hindi</option>
+                                                            <option value="Urdu">Urdu</option>
+                                                        </CustomSelect>
+                                                    </td>
+                                                    <td><input type="file" name="certificate_X" className="form-control form-control-sm" accept=".pdf" required /></td>
+                                                </tr>
+                                                <tr>
+                                                    <td className="fw-bold">IX</td>
+                                                    <td><input type="text" name="school_IX" className="form-control form-control-sm" required /></td>
+                                                    <td><input type="text" name="board_IX" className="form-control form-control-sm" required /></td>
+                                                    <td><input type="date" name="year_IX" className="form-control form-control-sm" required /></td>
+                                                    <td><input type="number" name="grade_IX" className="form-control form-control-sm" min="0" max="100" step="0.01" onInput={(e) => { if (e.target.value > 100) e.target.value = 100; if (e.target.value < 0) e.target.value = 0; }} required /></td>
+                                                    <td>
+                                                        <CustomSelect name="medium_IX" className="form-select-sm" style={{ paddingRight: '1.5rem' }} required>
+                                                            <option value="">Select</option>
+                                                            <option value="Telugu">Telugu</option>
+                                                            <option value="English">English</option>
+                                                            <option value="Hindi">Hindi</option>
+                                                            <option value="Urdu">Urdu</option>
+                                                        </CustomSelect>
+                                                    </td>
+                                                    <td><input type="file" name="certificate_IX" className="form-control form-control-sm" accept=".pdf" required /></td>
+                                                </tr>
+                                            </>
+                                        )}
                                     </tbody>
                                 </table>
                             </div>
                         </div>
 
-                        {/* Qualifying Entrance Examination */}
-                        <div className="mt-4 border rounded">
-                            <div className="section-header">
-                                QUALIFYING ENTRANCE EXAMINATION
-                            </div>
-                            <div className="p-3">
-                                <div className="row">
-                                    <div className="col-md-6">
-                                        <label className="form-label">Certificate/Rank Card (pdf/jpg only):</label>
-                                        <input type="file" name="entranceCertificate" className="form-control" accept=".pdf, .jpg, .jpeg" />
-                                    </div>
+                        {/* Qualifying Entrance Examination - Only for PG */}
+                        {applicationFor === 'PG' && (
+                            <div className="mt-4 border rounded">
+                                <div className="section-header">
+                                    QUALIFYING ENTRANCE EXAMINATION
+                                </div>
+                                <div className="p-3 overflow-auto">
+                                    <table className="table table-borderless align-middle mb-0" style={{ minWidth: '700px' }}>
+                                        <thead className="bg-light" style={{ fontSize: '13px' }}>
+                                            <tr>
+                                                <th>Examination<span className="required-asterisk">*</span></th>
+                                                <th>HT Number<span className="required-asterisk">*</span></th>
+                                                <th>Rank<span className="required-asterisk">*</span></th>
+                                                <th>Year<span className="required-asterisk">*</span></th>
+                                                <th>Certificate/Rank Card (pdf/jpg)<span className="required-asterisk">*</span></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><input type="text" name="entranceExamName" className="form-control form-control-sm bg-light" value="ICET" readOnly required /></td>
+                                                <td><input type="text" name="entranceHtNumber" className="form-control form-control-sm" required /></td>
+                                                <td><input type="number" name="entranceRank" className="form-control form-control-sm" min="1" required /></td>
+                                                <td><input type="date" name="entranceYear" className="form-control form-control-sm" required /></td>
+                                                <td><input type="file" name="entranceCertificate" className="form-control form-control-sm" accept=".pdf,.jpg,.jpeg" required /></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
-                        </div>
+                        )}
 
                         {/* Submit Buttons */}
                         <div className="text-center mt-4 mb-2">

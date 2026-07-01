@@ -109,6 +109,22 @@ const AdmissionsList = ({ college }) => {
                 query = query.eq("contactNo", cleanMobile);
             }
 
+            // Filter by the specific type of application the user clicked on
+            if (selectedApp && selectedApp.applyUrl) {
+                const applyUrlParts = selectedApp.applyUrl.split('/');
+                const formType = applyUrlParts[2]; // e.g. "Inter_Form"
+                
+                if (formType === 'Inter_Form') {
+                    query = query.eq('applicationFor', 'Inter');
+                } else if (formType === 'Degree_BCCA') {
+                    query = query.eq('applicationFor', 'Degree').in('course', ['BCom', 'BBA']);
+                } else if (formType === 'Degree_BBCIT') {
+                    query = query.eq('applicationFor', 'Degree').in('course', ['BSc']);
+                } else if (formType === 'PG_MBA') {
+                    query = query.eq('applicationFor', 'PG');
+                }
+            }
+
             const { data, error } = await query;
 
             if (error) throw error;
@@ -173,6 +189,7 @@ const AdmissionsList = ({ college }) => {
                         const appId = viewedApplication.lead.applicationNumber || viewedApplication.lead.applicationId;
                         router.push(`/Payment/${appId}`);
                     }}
+                    onClose={() => router.push('/')}
                 />
             </div>
         );

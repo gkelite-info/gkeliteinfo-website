@@ -24,9 +24,12 @@
     "next": "^16.2.6",
     "next-sitemap": "^4.2.3",
     "react": "^19.0.0",
+    "react-confetti": "^6.4.0",
     "react-dom": "^19.0.0",
     "react-hot-toast": "^2.6.0",
-    "sqids": "^0.3.0"
+    "react-use": "^17.6.1",
+    "sqids": "^0.3.0",
+    "stripe": "^22.3.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
