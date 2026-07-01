@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { use } from 'react';
 import { toast, Toaster } from 'react-hot-toast';
+import Confetti from 'react-confetti';
 
 const PaymentPage = ({ params }) => {
     // Unwrap params Promise for Next.js 15+
@@ -14,6 +15,40 @@ const PaymentPage = ({ params }) => {
     const [activeTab, setActiveTab] = useState('cards');
     const [upiTimer, setUpiTimer] = useState(232); // 3:52 in seconds
     const [qrExpired, setQrExpired] = useState(false);
+    
+    const [isSuccess, setIsSuccess] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const [cardNumber, setCardNumber] = useState('');
+    const [expiryDate, setExpiryDate] = useState('');
+    const [cvc, setCvc] = useState('');
+    const [showCvc, setShowCvc] = useState(false);
+    const [cardHolderName, setCardHolderName] = useState('');
+
+    const isFormValid = cardNumber.length === 19 && expiryDate.length === 5 && cvc.length >= 3 && cardHolderName.trim().length > 0;
+
+    const handleCardNumberChange = (e) => {
+        let value = e.target.value.replace(/\D/g, ''); // remove non-digits
+        if (value.length > 16) value = value.slice(0, 16);
+        // Add space every 4 digits
+        const formatted = value.replace(/(\d{4})/g, '$1 ').trim();
+        setCardNumber(formatted);
+    };
+
+    const handleExpiryChange = (e) => {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length > 4) value = value.slice(0, 4);
+        if (value.length > 2) {
+            value = value.slice(0, 2) + '/' + value.slice(2);
+        }
+        setExpiryDate(value);
+    };
+
+    const handleCvcChange = (e) => {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length > 4) value = value.slice(0, 4);
+        setCvc(value);
+    };
     
     // Simulate Order ID based on application ID (store in state to prevent regeneration)
     const [orderId] = useState(() => `${Math.floor(Math.random() * 100000000)}${applicationId}`);
@@ -43,17 +78,71 @@ const PaymentPage = ({ params }) => {
     };
 
     const handleShowQR = () => {
-        setUpiTimer(232);
         setQrExpired(false);
+        setUpiTimer(232);
     };
 
-    const handlePaymentSubmit = (e) => {
-        e?.preventDefault();
-        toast.success("Payment Simulated Successfully!");
-        setTimeout(() => {
-            router.push('/');
-        }, 2000);
+    const handlePaymentSubmit = async (e) => {
+        e.preventDefault();
+        if (!isFormValid) return;
+
+        setIsLoading(true);
+        const expParts = expiryDate.split('/');
+
+        try {
+            const response = await fetch('/api/payment/process', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    cardNumber: cardNumber.replace(/\s/g, ''),
+                    expMonth: parseInt(expParts[0], 10),
+                    expYear: parseInt('20' + expParts[1], 10),
+                    cvc: cvc,
+                    cardHolderName: cardHolderName,
+                    amount: amount,
+                    applicationId: applicationId
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+                toast.success('Payment successful!');
+                setIsSuccess(true);
+            } else {
+                toast.error(data.error || 'Payment failed.');
+            }
+        } catch (error) {
+            console.error(error);
+            toast.error('An error occurred during payment.');
+        } finally {
+            setIsLoading(false);
+        }
     };
+
+    if (isSuccess) {
+        return (
+            <div className="d-flex flex-column align-items-center justify-content-center bg-light" style={{ minHeight: '100vh', position: 'relative', overflow: 'hidden' }}>
+                <Confetti recycle={false} numberOfPieces={800} gravity={0.15} />
+                <div className="bg-white rounded shadow-lg p-5 text-center" style={{ maxWidth: '500px', zIndex: 10 }}>
+                    <div className="mb-4">
+                        <i className="bi bi-check-circle-fill text-success" style={{ fontSize: '80px' }}></i>
+                    </div>
+                    <h2 className="fw-bold mb-3" style={{ color: '#1a1f36' }}>Cheers! Payment Successful</h2>
+                    <p className="text-secondary mb-4" style={{ fontSize: '15px', lineHeight: '1.5' }}>
+                        Your payment of <strong className="text-dark">₹{amount}</strong> has been successfully processed and recorded. Thank you for your application!
+                    </p>
+                    <button 
+                        onClick={() => router.push('/')} 
+                        className="btn btn-primary fw-bold px-5 py-3 mt-2"
+                        style={{ borderRadius: '50px', backgroundColor: '#007bff', border: 'none', transition: 'all 0.3s' }}
+                    >
+                        <i className="bi bi-house-door-fill me-2"></i> Return to Home
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     const topBanks = [
         { id: 1, name: 'Axis Bank [Retail]', logo: 'https://logo.clearbit.com/axisbank.com' },
@@ -115,35 +204,33 @@ const PaymentPage = ({ params }) => {
                                         <span style={{ fontSize: '14px' }}>Credit / Debit Cards</span>
                                     </div>
                                     <div 
-                                        onClick={() => setActiveTab('netbanking')}
-                                        className="p-3 border-bottom d-flex align-items-center gap-3 cursor-pointer"
+                                        className="p-3 border-bottom d-flex align-items-center gap-3"
                                         style={{ 
-                                            cursor: 'pointer',
-                                            backgroundColor: activeTab === 'netbanking' ? '#fff' : 'transparent',
-                                            borderLeft: activeTab === 'netbanking' ? '4px solid #ff5722' : '4px solid transparent',
-                                            color: activeTab === 'netbanking' ? '#1a1f36' : '#5469d4',
-                                            fontWeight: activeTab === 'netbanking' ? '600' : '500',
+                                            opacity: 0.6,
+                                            backgroundColor: 'transparent',
+                                            borderLeft: '4px solid transparent',
+                                            color: '#5469d4',
+                                            fontWeight: '500',
                                         }}
                                     >
                                         <i className="bi bi-bank"></i>
                                         <span style={{ fontSize: '14px' }}>Net Banking</span>
                                     </div>
                                     <div 
-                                        onClick={() => setActiveTab('upi')}
-                                        className="p-3 border-bottom d-flex align-items-center gap-3 cursor-pointer"
+                                        className="p-3 border-bottom d-flex align-items-center gap-3"
                                         style={{ 
-                                            cursor: 'pointer',
-                                            backgroundColor: activeTab === 'upi' ? '#fff' : 'transparent',
-                                            borderLeft: activeTab === 'upi' ? '4px solid #ff5722' : '4px solid transparent',
-                                            color: activeTab === 'upi' ? '#1a1f36' : '#5469d4',
-                                            fontWeight: activeTab === 'upi' ? '600' : '500',
+                                            opacity: 0.6,
+                                            backgroundColor: 'transparent',
+                                            borderLeft: '4px solid transparent',
+                                            color: '#5469d4',
+                                            fontWeight: '500',
                                         }}
                                     >
-                                        <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/UPI-Logo-vector.svg" alt="UPI" style={{ height: '16px' }} />
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/UPI-Logo-vector.svg" alt="UPI" style={{ height: '16px', filter: 'grayscale(100%)' }} />
                                     </div>
                                     <div className="p-3 text-secondary d-flex align-items-center gap-3" style={{ opacity: 0.6 }}>
                                         <i className="bi bi-wallet2"></i>
-                                        <span style={{ fontSize: '14px' }}>Wallets (Disabled)</span>
+                                        <span style={{ fontSize: '14px' }}>Wallets</span>
                                     </div>
                                 </div>
 
@@ -156,27 +243,30 @@ const PaymentPage = ({ params }) => {
                                             <div className="d-flex justify-content-between align-items-center mb-4">
                                                 <span style={{ fontSize: '13px', color: '#5469d4', fontWeight: '500' }}>Card details</span>
                                                 <div className="d-flex gap-2">
-                                                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" style={{ height: '12px' }} />
-                                                    <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" style={{ height: '16px' }} />
-                                                    <img src="https://upload.wikimedia.org/wikipedia/commons/c/cb/Rupay-Logo.png" alt="Rupay" style={{ height: '14px' }} />
+                                                    <img src="https://img.icons8.com/color/48/000000/visa.png" alt="Visa" style={{ height: '24px', objectFit: 'contain' }} />
+                                                    <img src="https://img.icons8.com/color/48/000000/mastercard.png" alt="Mastercard" style={{ height: '24px', objectFit: 'contain' }} />
+                                                    <img src="https://img.icons8.com/color/48/000000/rupay.png" alt="Rupay" style={{ height: '24px', objectFit: 'contain' }} />
                                                 </div>
                                             </div>
                                             
                                             <div className="border rounded mb-4 shadow-sm" style={{ borderColor: '#e2e8f0' }}>
-                                                <input type="text" className="form-control border-0 border-bottom shadow-none p-3" placeholder="Card number" required />
+                                                <input type="text" className="form-control border-0 border-bottom shadow-none p-3" placeholder="Card number" required value={cardNumber} onChange={handleCardNumberChange} />
                                                 <div className="d-flex">
-                                                    <input type="text" className="form-control border-0 border-end shadow-none p-3" placeholder="Expiration date" style={{ width: '50%' }} required />
-                                                    <input type="text" className="form-control border-0 shadow-none p-3" placeholder="Security code" style={{ width: '50%' }} required />
+                                                    <input type="text" className="form-control border-0 border-end shadow-none p-3" placeholder="Expiration date (MM/YY)" style={{ width: '50%' }} required value={expiryDate} onChange={handleExpiryChange} />
+                                                    <div className="position-relative" style={{ width: '50%' }}>
+                                                        <input type={showCvc ? "text" : "password"} className="form-control border-0 shadow-none p-3 pe-5" placeholder="Security code" required value={cvc} onChange={handleCvcChange} />
+                                                        <i className={`bi ${showCvc ? "bi-eye-slash" : "bi-eye"} position-absolute text-muted`} style={{ right: '15px', top: '50%', transform: 'translateY(-50%)', cursor: 'pointer', fontSize: '18px' }} onClick={() => setShowCvc(!showCvc)}></i>
+                                                    </div>
                                                 </div>
                                             </div>
 
                                             <div className="mb-4">
                                                 <label style={{ fontSize: '13px', color: '#5469d4', fontWeight: '500', marginBottom: '10px' }}>Card holder name</label>
-                                                <input type="text" className="form-control shadow-none p-3 border rounded" placeholder="Full name on card" required />
+                                                <input type="text" className="form-control shadow-none p-3 border rounded" placeholder="Full name on card" required value={cardHolderName} onChange={(e) => setCardHolderName(e.target.value)} />
                                             </div>
 
-                                            <button type="submit" className="btn w-100 fw-bold" style={{ backgroundColor: '#e2e8f0', color: '#8792a2', padding: '12px' }}>
-                                                Pay ₹{amount}
+                                            <button type="submit" className="btn w-100 fw-bold" disabled={!isFormValid || isLoading} style={{ backgroundColor: isFormValid ? '#28a745' : '#e2e8f0', color: isFormValid ? '#ffffff' : '#8792a2', padding: '12px', transition: 'all 0.3s' }}>
+                                                {isLoading ? 'Processing...' : `Pay ₹${amount}`}
                                             </button>
                                         </form>
                                     )}

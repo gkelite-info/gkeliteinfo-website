@@ -169,7 +169,7 @@ const Header = () => {
                     <nav id="navmenu" className="navmenu">
                         <ul className="pt-2">
                             <li className="dropdown">
-                                <Link href="/admissions" className={isActive("/admissions") ? "active" : ""}>
+                                <Link href="" className={isActive("") ? "active" : ""}>
                                     <span>Admissions</span> <i className="bi bi-chevron-down toggle-dropdown"></i>
                                 </Link>
                                 <ul>

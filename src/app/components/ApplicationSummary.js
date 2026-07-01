@@ -2,7 +2,7 @@
 
 import React from 'react';
 
-const ApplicationSummary = ({ lead, qualifications, title, paymentStatus, onEdit, onProceedPay }) => {
+const ApplicationSummary = ({ lead, qualifications, title, paymentStatus, onEdit, onProceedPay, onClose }) => {
     if (!lead) return null;
 
     return (
@@ -110,14 +110,17 @@ const ApplicationSummary = ({ lead, qualifications, title, paymentStatus, onEdit
 
                 {/* Footer Buttons */}
                 <div className="d-flex justify-content-center gap-2 p-4 border-top bg-white rounded-bottom">
-                    {onEdit && (
-                        <button className="btn btn-success px-4 text-white" style={{ backgroundColor: '#28a745', border: 'none' }} onClick={onEdit}>
-                            Edit
+                    {/* Edit button removed per request */}
+                    
+                    {paymentStatus === 'Success' ? (
+                        <button className="btn btn-primary px-4 text-white fw-bold" style={{ backgroundColor: '#007bff', border: 'none' }} onClick={onClose}>
+                            <i className="bi bi-house-door-fill me-2"></i> Return to Home
+                        </button>
+                    ) : (
+                        <button className="btn btn-success px-4 text-white fw-bold" style={{ backgroundColor: '#28a745', border: 'none' }} onClick={onProceedPay}>
+                            Proceed to Online Payment
                         </button>
                     )}
-                    <button className="btn btn-success px-4 text-white" style={{ backgroundColor: '#28a745', border: 'none' }} onClick={onProceedPay}>
-                        Proceed to Online Payment
-                    </button>
                 </div>
             </div>
         </div>
