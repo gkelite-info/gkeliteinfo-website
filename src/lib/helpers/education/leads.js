@@ -60,6 +60,21 @@ export async function saveLeadApplication(payload) {
 
     const applicationId = leadResult.applicationId;
 
+    // Generate application number (e.g. GK-INTER-2026-00101)
+    const year = new Date().getFullYear();
+    const type = (payload.lead.applicationFor || "APP").toUpperCase();
+    const appNumber = `GK-${type}-${year}-${String(applicationId).padStart(5, '0')}`;
+
+    // Update with the generated application number
+    const { error: updateError } = await supabase
+      .from("lead_applications")
+      .update({ applicationNumber: appNumber })
+      .eq("applicationId", applicationId);
+
+    if (updateError) {
+      console.error("Failed to update applicationNumber:", updateError);
+    }
+
     // 2. Insert into education_qualifications
     if (payload.qualifications && payload.qualifications.length > 0) {
       const qualificationsData = payload.qualifications.map(q => ({
@@ -97,7 +112,7 @@ export async function saveLeadApplication(payload) {
       }
     }
 
-    return { success: true, applicationId };
+    return { success: true, applicationId, applicationNumber: appNumber };
   } catch (error) {
     console.error("saveLeadApplication error:", error);
     return { success: false, error };

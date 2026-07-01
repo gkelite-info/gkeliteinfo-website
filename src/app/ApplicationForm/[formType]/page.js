@@ -5,6 +5,8 @@ import { CaretDown } from "@phosphor-icons/react";
 import { State, City } from 'country-state-city';
 import { toast, Toaster } from 'react-hot-toast';
 import { saveLeadApplication, uploadApplicationFile } from '../../../lib/helpers/education/leads';
+import { useRouter } from 'next/navigation';
+import ApplicationSummary from '../../components/ApplicationSummary';
 
 // Custom Select wrapper with state-based rotation
 const CustomSelect = ({ children, className = '', style = {}, ...props }) => {
@@ -51,6 +53,10 @@ export default function ApplicationForm({ params }) {
 
     const [mounted, setMounted] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submittedRefNo, setSubmittedRefNo] = useState(null);
+    const [submittedEmail, setSubmittedEmail] = useState(null);
+    const [submittedData, setSubmittedData] = useState(null);
+    const router = useRouter();
 
     // Form state
     const [selectedState, setSelectedState] = useState('');
@@ -171,6 +177,37 @@ export default function ApplicationForm({ params }) {
 
             if (result.success) {
                 toast.success('Application submitted successfully!', { id: toastId });
+
+                // Trigger email notification
+                try {
+                    const emailRes = await fetch('/api/send-email', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            emailId: leadPayload.emailId,
+                            firstName: leadPayload.firstName,
+                            lastName: leadPayload.lastName,
+                            applicationNumber: result.applicationNumber,
+                            course: leadPayload.course,
+                            applicationFor: leadPayload.applicationFor
+                        })
+                    });
+
+                    const emailData = await emailRes.json();
+                    if (!emailRes.ok || !emailData.success) {
+                        console.error("Email API responded with error:", JSON.stringify(emailData));
+                        toast.error(`Application saved, but email failed: ${emailData.error || 'Unknown error'}`, { duration: 5000 });
+                    }
+                } catch (emailErr) {
+                    console.error("Email send network/parsing error:", emailErr);
+                    toast.error("Application saved, but failed to reach email service.", { duration: 5000 });
+                }
+
+                setSubmittedEmail(leadPayload.emailId);
+                setSubmittedRefNo(result.applicationNumber);
+                setSubmittedData({ lead: leadPayload, qualifications: qualifications });
                 e.target.reset();
             } else {
                 throw new Error("Failed to save application to database.");
@@ -213,6 +250,24 @@ export default function ApplicationForm({ params }) {
         showAadhaar = true;
     }
 
+    if (submittedRefNo && submittedData) {
+        const { lead, qualifications } = submittedData;
+        return (
+            <main className="bg-light py-5" style={{ minHeight: '100vh' }}>
+                <ApplicationSummary 
+                    lead={lead}
+                    qualifications={qualifications}
+                    title={title}
+                    onEdit={() => { setSubmittedRefNo(null); setSubmittedData(null); }}
+                    onProceedPay={() => {
+                        // Assuming result from save has applicationId or applicationNumber
+                        router.push(`/Payment/${submittedRefNo}`);
+                    }}
+                />
+            </main>
+        );
+    }
+
     const indianStates = State.getStatesOfCountry('IN');
 
     // Calculate max date for DOB (13 years ago)
@@ -222,7 +277,7 @@ export default function ApplicationForm({ params }) {
 
     return (
         <main className="bg-light py-5" style={{ minHeight: '100vh' }}>
-            <Toaster position="top-center" />
+            <Toaster position="top-right" />
             <style jsx global>{`
                 .form-label {
                     font-size: 14px;

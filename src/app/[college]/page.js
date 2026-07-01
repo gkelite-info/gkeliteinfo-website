@@ -1,7 +1,7 @@
 import AdmissionsList from "../components/AdmissionsList";
 
 export async function generateMetadata({ params }) {
-    const { college } = params;
+    const { college } = await params;
     const collegeNames = {
         bcca: "Badruka College of Commerce and Arts (BCCA)",
         bbcit: "Bankatlal Badruka College for Information Technology (BBCIT)",
@@ -17,8 +17,9 @@ export async function generateMetadata({ params }) {
     };
 }
 
-const Page = ({ params }) => {
-    return <AdmissionsList college={params.college} />;
+const Page = async ({ params }) => {
+    const { college } = await params;
+    return <AdmissionsList college={college} />;
 };
 
 export default Page;
