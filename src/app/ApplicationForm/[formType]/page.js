@@ -364,7 +364,6 @@ export default function ApplicationForm({ params }) {
                                 </CustomSelect>
                             </div>
 
-                            {/* Names */}
                             <div className="col-md-6">
                                 <label className="form-label">First Name:<span className="required-asterisk">*</span></label>
                                 <input type="text" name="firstName" className="form-control" required />
@@ -374,7 +373,6 @@ export default function ApplicationForm({ params }) {
                                 <input type="text" name="lastName" className="form-control" required />
                             </div>
 
-                            {/* Parents */}
                             <div className="col-md-6">
                                 <label className="form-label">Father's Name:<span className="required-asterisk">*</span></label>
                                 <input type="text" name="fathersName" className="form-control" required />
