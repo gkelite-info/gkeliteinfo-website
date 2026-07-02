@@ -6,12 +6,12 @@ export default function BootstrapClient() {
     useEffect(() => {
         const loadBootstrap = async () => {
             if (typeof window !== "undefined") {
-                await import("../js/main");
-                await import("../js/noframework.waypoints");
-                await import("../js/validate");
-                await import("../js/bootstrap.bundle.min.js");
-                await import("../js/glightbox.min.js");
-                await import("../js/swiper-bundle.min.js");
+                try { await import("../js/bootstrap.bundle.min.js"); } catch (e) { console.error("Error loading bootstrap:", e); }
+                try { await import("../js/noframework.waypoints.js"); } catch (e) { console.error("Error loading waypoints:", e); }
+                try { await import("../js/glightbox.min.js"); } catch (e) { console.error("Error loading glightbox:", e); }
+                try { await import("../js/swiper-bundle.min.js"); } catch (e) { console.error("Error loading swiper:", e); }
+                try { await import("../js/validate.js"); } catch (e) { console.error("Error loading validate:", e); }
+                try { await import("../js/main.js"); } catch (e) { console.error("Error loading main:", e); }
             }
         };
 
