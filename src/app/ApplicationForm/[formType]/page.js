@@ -405,13 +405,15 @@ export default function ApplicationForm({ params }) {
                                 <label className="form-label">Gender:<span className="required-asterisk">*</span></label>
                                 <div>
                                     <div className="form-check form-check-inline">
-                                        <input className="form-check-input" type="radio" name="gender" id="genderFemale" value="female" required />
+                                        <input className="form-check-input" type="radio" name="gender" id="genderFemale" value="female" required defaultChecked={applicationFor === 'Inter'} />
                                         <label className="form-check-label" htmlFor="genderFemale">Female</label>
                                     </div>
-                                    <div className="form-check form-check-inline">
-                                        <input className="form-check-input" type="radio" name="gender" id="genderMale" value="male" />
-                                        <label className="form-check-label" htmlFor="genderMale">Male</label>
-                                    </div>
+                                    {applicationFor !== "Inter" && (
+                                        <div className="form-check form-check-inline">
+                                            <input className="form-check-input" type="radio" name="gender" id="genderMale" value="male" />
+                                            <label className="form-check-label" htmlFor="genderMale">Male</label>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                             <div className="col-md-6">
