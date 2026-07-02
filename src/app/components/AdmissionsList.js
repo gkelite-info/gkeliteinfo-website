@@ -30,7 +30,7 @@ const AdmissionsList = ({ college }) => {
             dateText: "Start Date: 12-03-2026 13:49",
             details: "We will get back to you after the evaluation and verification of the furnished details.",
             helpdesk: "If there are any technical issues, kindly send the screenshot to the email id : helpdesk@badruka.com.",
-            applyUrl: `/ApplicationForm/Inter_Form/?appid=${sqids.encode([101])}`,
+            applyUrl: `/ApplicationForm/Inter_Form/?appid=${sqids.encode([101])}&college=bjcg`,
             payUrl: "https://www.tektoncampus.com/bjcg/pay"
         },
         {
@@ -41,7 +41,7 @@ const AdmissionsList = ({ college }) => {
             dateText: "Start Date: 12-03-2026 13:49",
             details: "We will get back to you after the evaluation and verification of the furnished details.",
             helpdesk: "If there are any technical issues, kindly send the screenshot to the email id : helpdesk@badruka.com.",
-            applyUrl: `/ApplicationForm/Degree_BCCA/?appid=${sqids.encode([102])}`,
+            applyUrl: `/ApplicationForm/Degree_BCCA/?appid=${sqids.encode([102])}&college=bcca`,
             payUrl: "https://www.tektoncampus.com/bcca/pay"
         },
         {
@@ -52,7 +52,7 @@ const AdmissionsList = ({ college }) => {
             dateText: "Start Date: 12-03-2026 13:49",
             details: "We will get back to you after the evaluation and verification of the furnished details.",
             helpdesk: "If there are any technical issues, kindly send the screenshot to the email id : helpdesk@badruka.com.",
-            applyUrl: `/ApplicationForm/Degree_BBCIT/?appid=${sqids.encode([103])}`,
+            applyUrl: `/ApplicationForm/Degree_BBCIT/?appid=${sqids.encode([103])}&college=bbcit`,
             payUrl: "https://www.tektoncampus.com/bbcit/pay"
         },
         {
@@ -63,7 +63,7 @@ const AdmissionsList = ({ college }) => {
             dateText: "Start Date: 15-06-2026 10:23",
             details: "We will get back to you after the evaluation and verification of the furnished details.",
             helpdesk: "If there are any technical issues, kindly send the screenshot to the email id : helpdesk@badruka.com.",
-            applyUrl: `/ApplicationForm/PG_MBA/?appid=${sqids.encode([104])}`,
+            applyUrl: `/ApplicationForm/PG_MBA/?appid=${sqids.encode([104])}&college=bcpgc`,
             payUrl: "https://www.tektoncampus.com/bcpgc/pay"
         }
     ];
@@ -204,11 +204,7 @@ const AdmissionsList = ({ college }) => {
                     Applications
                 </div>
 
-                {college && collegeNames[college] && (
-                    <div className="bg-white border-bottom border-start border-end px-4 py-2 text-secondary fw-semibold">
-                        Showing applications for: <span className="text-dark">{collegeNames[college]}</span>
-                    </div>
-                )}
+
 
                 <div className="bg-white border border-top-0 p-4 rounded-bottom shadow-sm">
                     {filteredApplications.length > 0 ? (

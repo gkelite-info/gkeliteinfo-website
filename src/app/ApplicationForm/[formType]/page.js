@@ -5,7 +5,7 @@ import { CaretDown } from "@phosphor-icons/react";
 import { State, City } from 'country-state-city';
 import { toast, Toaster } from 'react-hot-toast';
 import { saveLeadApplication, uploadApplicationFile } from '../../../lib/helpers/education/leads';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import ApplicationSummary from '../../components/ApplicationSummary';
 
 const CustomSelect = ({ children, className = '', style = {}, ...props }) => {
@@ -55,6 +55,8 @@ export default function ApplicationForm({ params }) {
     const [submittedEmail, setSubmittedEmail] = useState(null);
     const [submittedData, setSubmittedData] = useState(null);
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const selectedCollege = searchParams.get('college') || '';
 
     const [selectedState, setSelectedState] = useState('');
     const [cities, setCities] = useState([]);
@@ -136,6 +138,7 @@ export default function ApplicationForm({ params }) {
                 pinCode: data.pinCode,
                 profileImage: profileImageUrl,
                 admissionRegistrationFee: 500,
+                college: selectedCollege ? selectedCollege.toLowerCase() : null,
                 is_deleted: false,
             };
 

@@ -174,10 +174,10 @@ const Header = () => {
                                 </Link>
                                 <ul>
                                     <li><Link href="/bcca" target="_blank">Badruka College of Commerce and Arts</Link></li>
-                                    <li><Link href="/bbcit" target="_blank">Bankatlal Badruka College for Information Technology</Link></li>
+                                    {/* <li><Link href="/bbcit" target="_blank">Bankatlal Badruka College for Information Technology</Link></li> */}
                                     <li><Link href="/bcpgc" target="_blank">Badruka College Post Graduate Centre (MBA)</Link></li>
                                     <li><Link href="/bjcg" target="_blank">Badruka Junior College for Girls</Link></li>
-                                    <li><Link href="/bbsmd" target="_blank">Bansilal Badruka School of Music and Dance</Link></li>
+                                    {/* <li><Link href="/bbsmd" target="_blank">Bansilal Badruka School of Music and Dance</Link></li> */}
                                 </ul>
                             </li>
                             <li>
