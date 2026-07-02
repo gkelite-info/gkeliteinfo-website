@@ -76,6 +76,23 @@ const AdmissionsList = ({ college }) => {
     const [selectedApp, setSelectedApp] = useState(null);
     const router = useRouter();
 
+    const handleApplyClick = async (app) => {
+        try {
+            await fetch('/api/analytics', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    eventType: 'apply_now_click',
+                    college: app.college,
+                    path: window.location.pathname,
+                    metadata: { title: app.title, applyUrl: app.applyUrl }
+                })
+            });
+        } catch (error) {
+            console.error("Error logging apply click:", error);
+        }
+    };
+
     const handlePayViewClick = (app) => {
         setSelectedApp(app);
         setShowModal(true);
@@ -192,8 +209,6 @@ const AdmissionsList = ({ college }) => {
         );
     }
 
-    const filteredApplications = applications;
-
     return (
         <main className="main py-5 bg-light" style={{ minHeight: "80vh" }}>
             <div className="container" style={{ maxWidth: "900px" }}>
@@ -207,8 +222,8 @@ const AdmissionsList = ({ college }) => {
 
 
                 <div className="bg-white border border-top-0 p-4 rounded-bottom shadow-sm">
-                    {filteredApplications.length > 0 ? (
-                        filteredApplications.map((app) => (
+                    {applications.length > 0 ? (
+                        applications.map((app) => (
                             <div
                                 key={app.id}
                                 className="border rounded p-3 mb-4"
@@ -241,6 +256,7 @@ const AdmissionsList = ({ college }) => {
                                             href={app.applyUrl}
                                             target="_blank"
                                             rel="noopener noreferrer"
+                                            onClick={() => handleApplyClick(app)}
                                             className="btn btn-primary text-white px-3 py-1-5 fw-semibold"
                                             style={{
                                                 fontSize: "14px",
