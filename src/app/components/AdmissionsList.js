@@ -44,17 +44,17 @@ const AdmissionsList = ({ college }) => {
             applyUrl: `/ApplicationForm/Degree_BCCA/?appid=${sqids.encode([102])}&college=bcca`,
             payUrl: "https://www.tektoncampus.com/bcca/pay"
         },
-        {
-            id: "bbcit-degree",
-            college: "bbcit",
-            status: "Open",
-            title: "Degree (BBCIT) Application - (2026 -2027) BSc",
-            dateText: "Start Date: 12-03-2026 13:49",
-            details: "We will get back to you after the evaluation and verification of the furnished details.",
-            helpdesk: "If there are any technical issues, kindly send the screenshot to the email id : helpdesk@badruka.com.",
-            applyUrl: `/ApplicationForm/Degree_BBCIT/?appid=${sqids.encode([103])}&college=bbcit`,
-            payUrl: "https://www.tektoncampus.com/bbcit/pay"
-        },
+        // {
+        //     id: "bbcit-degree",
+        //     college: "bbcit",
+        //     status: "Open",
+        //     title: "Degree (BBCIT) Application - (2026 -2027) BSc",
+        //     dateText: "Start Date: 12-03-2026 13:49",
+        //     details: "We will get back to you after the evaluation and verification of the furnished details.",
+        //     helpdesk: "If there are any technical issues, kindly send the screenshot to the email id : helpdesk@badruka.com.",
+        //     applyUrl: `/ApplicationForm/Degree_BBCIT/?appid=${sqids.encode([103])}`,
+        //     payUrl: "https://www.tektoncampus.com/bbcit/pay"
+        // },
         {
             id: "bcpgc-pg",
             college: "bcpgc",

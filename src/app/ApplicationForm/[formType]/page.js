@@ -67,12 +67,19 @@ export default function ApplicationForm({ params }) {
 
     useEffect(() => {
         try {
+            let currentCollege = null;
+            if (formType === 'Inter_Form') currentCollege = 'bjcg';
+            else if (formType === 'Degree_BCCA') currentCollege = 'bcca';
+            else if (formType === 'Degree_BBCIT') currentCollege = 'bbcit';
+            else if (formType === 'PG_MBA') currentCollege = 'bcpgc';
+
             fetch('/api/analytics', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     eventType: 'FORM_OPEN',
                     formType: formType,
+                    college: currentCollege,
                     path: window.location.pathname
                 })
             });
@@ -199,6 +206,12 @@ export default function ApplicationForm({ params }) {
                 toast.success('Application submitted successfully!', { id: toastId });
 
                 try {
+                    let currentCollege = null;
+                    if (formType === 'Inter_Form') currentCollege = 'bjcg';
+                    else if (formType === 'Degree_BCCA') currentCollege = 'bcca';
+                    else if (formType === 'Degree_BBCIT') currentCollege = 'bbcit';
+                    else if (formType === 'PG_MBA') currentCollege = 'bcpgc';
+
                     fetch('/api/analytics', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -206,6 +219,7 @@ export default function ApplicationForm({ params }) {
                             eventType: 'FORM_SUBMIT',
                             formType: formType,
                             applicationId: result.applicationId,
+                            college: currentCollege,
                             path: window.location.pathname
                         })
                     });
