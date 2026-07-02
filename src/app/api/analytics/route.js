@@ -45,7 +45,7 @@ export async function POST(req) {
         }
 
         const body = await req.json();
-        const { eventType, formType, applicationId, path, metadata } = body;
+        const { eventType, formType, applicationId, college, path, metadata } = body;
 
         if (!eventType || !path) {
             return NextResponse.json(
@@ -75,6 +75,7 @@ export async function POST(req) {
             eventType,
             formType: formType || null,
             applicationId: applicationId || null,
+            college: college || null,
             path,
             ipAddress: ip,
             userAgent,

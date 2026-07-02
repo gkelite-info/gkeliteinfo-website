@@ -130,12 +130,22 @@ const Header = () => {
 
     useEffect(() => {
         try {
+            let college = null;
+            if (pathname) {
+                if (pathname.startsWith('/bcca')) college = 'bcca';
+                else if (pathname.startsWith('/bbcit')) college = 'bbcit';
+                else if (pathname.startsWith('/bcpgc')) college = 'bcpgc';
+                else if (pathname.startsWith('/bjcg')) college = 'bjcg';
+                else if (pathname.startsWith('/bbsmd')) college = 'bbsmd';
+            }
+
             fetch('/api/analytics', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     eventType: 'SITE_VISIT',
-                    path: pathname || '/'
+                    path: pathname || '/',
+                    ...(college && { college })
                 })
             });
         } catch (error) {
