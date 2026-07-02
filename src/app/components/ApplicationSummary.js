@@ -7,26 +7,22 @@ const ApplicationSummary = ({ lead, qualifications, title, paymentStatus, onEdit
 
     return (
         <div className="container p-0 mb-5 mt-4" style={{ maxWidth: '1000px' }}>
-            {/* Top success banner */}
             <div className="alert alert-success text-center mb-3" style={{ backgroundColor: '#d4edda', color: '#155724', border: '1px solid #c3e6cb', borderRadius: '4px' }}>
                 Successfully Application submitted..
             </div>
-            
+
             <div className="bg-white border rounded shadow-sm">
-                {/* Blue Header */}
                 <div className="text-white text-center py-3 fw-bold rounded-top" style={{ backgroundColor: paymentStatus === 'Success' ? '#28a745' : '#007bff', fontSize: '22px' }}>
                     {title || "Application"} {paymentStatus === 'Success' ? 'Successful' : 'Pending'}
                 </div>
 
                 <div className="row g-0 p-4">
-                    {/* Left Column (Profile) */}
                     <div className="col-md-3 border-end text-center pe-4">
                         <img src={lead.profileImage || '/placeholder-user.jpg'} alt="Profile" className="img-fluid rounded mb-3" style={{ maxWidth: '150px', border: '1px solid #ddd' }} />
                         <h6 className="fw-bold mb-1">{lead.firstName} {lead.lastName}</h6>
                         <p className="text-muted small text-break">{lead.emailId}</p>
                     </div>
 
-                    {/* Middle Column (Personal Details) */}
                     <div className="col-md-5 border-end px-4">
                         <h5 className="fw-bold mb-3">Personal Details</h5>
                         <div className="row mb-2">
@@ -57,7 +53,6 @@ const ApplicationSummary = ({ lead, qualifications, title, paymentStatus, onEdit
                         </div>
                     </div>
 
-                    {/* Right Column (Contact Details) */}
                     <div className="col-md-4 ps-4">
                         <h5 className="fw-bold mb-3">Contact Details</h5>
                         <div className="mb-2"><small className="text-muted fw-bold">Email ID</small><br /><span className="text-break">{lead.emailId}</span></div>
@@ -69,7 +64,6 @@ const ApplicationSummary = ({ lead, qualifications, title, paymentStatus, onEdit
                     </div>
                 </div>
 
-                {/* Education Details */}
                 <div className="p-4 pt-0">
                     <h5 className="fw-bold mb-3">Education Details</h5>
                     <div className="table-responsive">
@@ -108,10 +102,8 @@ const ApplicationSummary = ({ lead, qualifications, title, paymentStatus, onEdit
                     </div>
                 </div>
 
-                {/* Footer Buttons */}
                 <div className="d-flex justify-content-center gap-2 p-4 border-top bg-white rounded-bottom">
-                    {/* Edit button removed per request */}
-                    
+
                     {paymentStatus === 'Success' ? (
                         <button className="btn btn-primary px-4 text-white fw-bold" style={{ backgroundColor: '#007bff', border: 'none' }} onClick={onClose}>
                             <i className="bi bi-house-door-fill me-2"></i> Return to Home

@@ -19,7 +19,6 @@ export async function uploadApplicationFile(file, bucket, path) {
 
     if (error) throw error;
 
-    // Get public URL
     const { data: publicUrlData } = supabase.storage
       .from(bucket)
       .getPublicUrl(path);
@@ -43,7 +42,6 @@ export async function saveLeadApplication(payload) {
   try {
     const now = new Date().toISOString();
 
-    // 1. Insert into lead_applications
     const leadData = {
       ...payload.lead,
       createdAt: now,
@@ -60,12 +58,10 @@ export async function saveLeadApplication(payload) {
 
     const applicationId = leadResult.applicationId;
 
-    // Generate application number (e.g. GK-INTER-2026-00101)
     const year = new Date().getFullYear();
     const type = (payload.lead.applicationFor || "APP").toUpperCase();
     const appNumber = `GK-${type}-${year}-${String(applicationId).padStart(5, '0')}`;
 
-    // Update with the generated application number
     const { error: updateError } = await supabase
       .from("lead_applications")
       .update({ applicationNumber: appNumber })
@@ -75,7 +71,6 @@ export async function saveLeadApplication(payload) {
       console.error("Failed to update applicationNumber:", updateError);
     }
 
-    // 2. Insert into education_qualifications
     if (payload.qualifications && payload.qualifications.length > 0) {
       const qualificationsData = payload.qualifications.map(q => ({
         ...q,
@@ -90,11 +85,9 @@ export async function saveLeadApplication(payload) {
 
       if (qualError) {
         console.error("education_qualifications insert error:", qualError);
-        // Continue even if it fails, or you could handle a rollback logic
       }
     }
 
-    // 3. Insert into entrance_exams
     if (payload.entranceExam) {
       const examData = {
         ...payload.entranceExam,

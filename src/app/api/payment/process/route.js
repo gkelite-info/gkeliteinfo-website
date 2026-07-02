@@ -12,18 +12,13 @@ export async function POST(req) {
         const body = await req.json();
         const { cardNumber, expMonth, expYear, cvc, cardHolderName, amount, applicationId } = body;
 
-        // Note: Passing raw card details through your own API requires PCI compliance.
-        // Stripe throws an error if raw card data access isn't enabled in the Dashboard.
-        // For this test environment, we map standard test card numbers to Stripe's test tokens.
-        
         let paymentMethodId;
-        
+
         if (cardNumber.startsWith('4242')) {
             paymentMethodId = 'pm_card_visa';
         } else if (cardNumber.startsWith('5555')) {
             paymentMethodId = 'pm_card_mastercard';
         } else {
-            // Fallback: try creating it (this will throw the same raw-card error if not enabled)
             const paymentMethod = await stripe.paymentMethods.create({
                 type: 'card',
                 card: {
@@ -39,7 +34,6 @@ export async function POST(req) {
             paymentMethodId = paymentMethod.id;
         }
 
-        // Resolve internal integer applicationId if a string (like GK-INTER-2026-00005) was provided
         let internalAppId = parseInt(applicationId, 10);
         if (isNaN(internalAppId)) {
             const { data: leadData } = await supabase
@@ -47,7 +41,7 @@ export async function POST(req) {
                 .select('applicationId')
                 .eq('applicationNumber', applicationId)
                 .single();
-                
+
             if (leadData && leadData.applicationId) {
                 internalAppId = leadData.applicationId;
             } else {
@@ -55,9 +49,8 @@ export async function POST(req) {
             }
         }
 
-        // Create and confirm a PaymentIntent to immediately charge the card
         const paymentIntent = await stripe.paymentIntents.create({
-            amount: amount * 100, // Amount in paise (₹500 -> 50000)
+            amount: amount * 100,
             currency: 'inr',
             payment_method: paymentMethodId,
             confirm: true,
@@ -68,7 +61,6 @@ export async function POST(req) {
         });
 
         if (paymentIntent.status === 'succeeded') {
-            // Insert into Supabase lead_payments table
             const { error: dbError } = await supabase.from('lead_payments').insert({
                 applicationId: internalAppId,
                 amount: amount,
@@ -83,7 +75,6 @@ export async function POST(req) {
 
             if (dbError) {
                 console.error("Supabase insert error:", dbError);
-                // Still return success since the payment went through
                 return NextResponse.json({ success: true, paymentIntent, note: 'DB Insert Failed' });
             }
 

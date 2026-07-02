@@ -8,7 +8,6 @@ import { saveLeadApplication, uploadApplicationFile } from '../../../lib/helpers
 import { useRouter } from 'next/navigation';
 import ApplicationSummary from '../../components/ApplicationSummary';
 
-// Custom Select wrapper with state-based rotation
 const CustomSelect = ({ children, className = '', style = {}, ...props }) => {
     const [isOpen, setIsOpen] = useState(false);
     return (
@@ -48,7 +47,6 @@ const CustomSelect = ({ children, className = '', style = {}, ...props }) => {
 };
 
 export default function ApplicationForm({ params }) {
-    // Unwrap params using React.use() as required in newer Next.js versions for dynamic APIs
     const { formType } = use(params);
 
     const [mounted, setMounted] = useState(false);
@@ -58,7 +56,6 @@ export default function ApplicationForm({ params }) {
     const [submittedData, setSubmittedData] = useState(null);
     const router = useRouter();
 
-    // Form state
     const [selectedState, setSelectedState] = useState('');
     const [cities, setCities] = useState([]);
 
@@ -82,7 +79,6 @@ export default function ApplicationForm({ params }) {
         }
     }, [formType]);
 
-    // Handle State change
     const handleStateChange = (e) => {
         const stateCode = e.target.value;
         setSelectedState(stateCode);
@@ -91,6 +87,12 @@ export default function ApplicationForm({ params }) {
         } else {
             setCities([]);
         }
+    };
+
+    const handleReset = () => {
+        setSelectedState('');
+        setCities([]);
+        toast.success("Reset Successful.");
     };
 
     const handleSubmit = async (e) => {
@@ -102,7 +104,6 @@ export default function ApplicationForm({ params }) {
             const formData = new FormData(e.target);
             const data = Object.fromEntries(formData.entries());
 
-            // 1. Upload Profile Image
             const profileImageFile = formData.get('profileImage');
             let profileImageUrl = '';
             if (profileImageFile && profileImageFile.size > 0) {
@@ -115,7 +116,6 @@ export default function ApplicationForm({ params }) {
                 }
             }
 
-            // 2. Prepare Lead Data
             const leadPayload = {
                 applicationFor: data.applicationFor,
                 course: data.course,
@@ -135,17 +135,18 @@ export default function ApplicationForm({ params }) {
                 city: data.city,
                 pinCode: data.pinCode,
                 profileImage: profileImageUrl,
-                admissionRegistrationFee: 500, // Fixed fee
+                admissionRegistrationFee: 500,
                 is_deleted: false,
             };
 
-            // 3. Handle Educational Qualifications
             const qualifications = [];
-            const levels = data.applicationFor === 'PG' ? ['Degree'] : ['IX', 'X'];
+            let levels = ['IX', 'X'];
+            if (data.applicationFor === 'PG') levels = ['Degree'];
+            else if (data.applicationFor === 'Degree') levels = ['XI', 'X'];
 
             for (const level of levels) {
                 const school = formData.get(`school_${level}`);
-                if (school) { // Only add if they filled it out
+                if (school) {
                     let certUrl = '';
                     const certFile = formData.get(`certificate_${level}`);
                     if (certFile && certFile.size > 0) {
@@ -166,7 +167,6 @@ export default function ApplicationForm({ params }) {
                 }
             }
 
-            // 4. Handle Entrance Exam (if provided)
             let entranceExam = null;
             if (data.applicationFor === 'PG') {
                 const entranceCertFile = formData.get('entranceCertificate');
@@ -186,7 +186,6 @@ export default function ApplicationForm({ params }) {
                 }
             }
 
-            // 5. Save everything
             const result = await saveLeadApplication({
                 lead: leadPayload,
                 qualifications,
@@ -196,7 +195,6 @@ export default function ApplicationForm({ params }) {
             if (result.success) {
                 toast.success('Application submitted successfully!', { id: toastId });
 
-                // Track Form Submit Analytics
                 try {
                     fetch('/api/analytics', {
                         method: 'POST',
@@ -212,7 +210,6 @@ export default function ApplicationForm({ params }) {
                     console.error("Analytics tracking failed:", error);
                 }
 
-                // Trigger email notification
                 try {
                     const emailRes = await fetch('/api/send-email', {
                         method: 'POST',
@@ -257,7 +254,6 @@ export default function ApplicationForm({ params }) {
 
     if (!mounted) return null;
 
-    // Determine Title, Courses, and Show Aadhaar based on formType
     let title = "Application Form";
     let applicationFor = "";
     let courses = [];
@@ -294,7 +290,6 @@ export default function ApplicationForm({ params }) {
                     title={title}
                     onEdit={() => { setSubmittedRefNo(null); setSubmittedData(null); }}
                     onProceedPay={() => {
-                        // Assuming result from save has applicationId or applicationNumber
                         router.push(`/Payment/${submittedRefNo}`);
                     }}
                 />
@@ -304,10 +299,12 @@ export default function ApplicationForm({ params }) {
 
     const indianStates = State.getStatesOfCountry('IN');
 
-    // Calculate max date for DOB (13 years ago)
     const today = new Date();
     today.setFullYear(today.getFullYear() - 13);
     const maxDateString = today.toISOString().split('T')[0];
+
+    const todayDate = new Date();
+    const maxTodayString = todayDate.toISOString().split('T')[0];
 
     return (
         <main className="bg-light py-5" style={{ minHeight: '100vh' }}>
@@ -331,21 +328,26 @@ export default function ApplicationForm({ params }) {
                     text-transform: uppercase;
                     color: #495057;
                 }
+                input[type="number"]::-webkit-inner-spin-button,
+                input[type="number"]::-webkit-outer-spin-button {
+                    -webkit-appearance: none;
+                    margin: 0;
+                }
+                input[type="number"] {
+                    -moz-appearance: textfield;
+                }
             `}</style>
 
             <div className="container bg-white p-0 border rounded shadow-sm" style={{ maxWidth: '900px' }}>
-                {/* Header */}
                 <div className="text-white text-center py-3 fw-bold rounded-top" style={{ backgroundColor: '#007bff', fontSize: '22px' }}>
                     {title}
                 </div>
 
                 <div className="p-4">
-                    <form onSubmit={handleSubmit}>
+                    <form onSubmit={handleSubmit} onReset={handleReset}>
                         <div className="row g-3">
-                            {/* Application For & Course */}
                             <div className="col-md-6">
                                 <label className="form-label">Application For:<span className="required-asterisk">*</span></label>
-                                {/* We must pass this value when submitting, so we use a hidden input or ensure disabled fields are omitted and we reconstruct it. We'll use a hidden input for the actual value because disabled inputs aren't in FormData. */}
                                 <input type="hidden" name="applicationFor" value={applicationFor} />
                                 <CustomSelect required value={applicationFor} disabled>
                                     <option value="">Select</option>
@@ -366,23 +368,22 @@ export default function ApplicationForm({ params }) {
 
                             <div className="col-md-6">
                                 <label className="form-label">First Name:<span className="required-asterisk">*</span></label>
-                                <input type="text" name="firstName" className="form-control" required />
+                                <input type="text" name="firstName" className="form-control" onInput={(e) => { let val = e.target.value.replace(/[^A-Za-z\s]/g, ''); if (val) val = val.charAt(0).toUpperCase() + val.slice(1); e.target.value = val; }} required />
                             </div>
                             <div className="col-md-6">
                                 <label className="form-label">Last Name:<span className="required-asterisk">*</span></label>
-                                <input type="text" name="lastName" className="form-control" required />
+                                <input type="text" name="lastName" className="form-control" onInput={(e) => { let val = e.target.value.replace(/[^A-Za-z\s]/g, ''); if (val) val = val.charAt(0).toUpperCase() + val.slice(1); e.target.value = val; }} required />
                             </div>
 
                             <div className="col-md-6">
                                 <label className="form-label">Father's Name:<span className="required-asterisk">*</span></label>
-                                <input type="text" name="fathersName" className="form-control" required />
+                                <input type="text" name="fathersName" className="form-control" onInput={(e) => { let val = e.target.value.replace(/[^A-Za-z\s]/g, ''); if (val) val = val.charAt(0).toUpperCase() + val.slice(1); e.target.value = val; }} required />
                             </div>
                             <div className="col-md-6">
                                 <label className="form-label">Mother's Name:<span className="required-asterisk">*</span></label>
-                                <input type="text" name="mothersName" className="form-control" required />
+                                <input type="text" name="mothersName" className="form-control" onInput={(e) => { let val = e.target.value.replace(/[^A-Za-z\s]/g, ''); if (val) val = val.charAt(0).toUpperCase() + val.slice(1); e.target.value = val; }} required />
                             </div>
 
-                            {/* Gender & DOB */}
                             <div className="col-md-6">
                                 <label className="form-label">Gender:<span className="required-asterisk">*</span></label>
                                 <div>
@@ -401,7 +402,6 @@ export default function ApplicationForm({ params }) {
                                 <input type="date" name="dateOfBirth" className="form-control" max={maxDateString} required />
                             </div>
 
-                            {/* Nationality & Category */}
                             <div className="col-md-6">
                                 <label className="form-label">Nationality:<span className="required-asterisk">*</span></label>
                                 <CustomSelect name="nationality" required>
@@ -422,7 +422,6 @@ export default function ApplicationForm({ params }) {
                                 </CustomSelect>
                             </div>
 
-                            {/* Conditional Aadhaar */}
                             {showAadhaar && (
                                 <div className="col-md-12">
                                     <label className="form-label">Aadhaar Number:<span className="required-asterisk">*</span></label>
@@ -432,8 +431,8 @@ export default function ApplicationForm({ params }) {
                                         className="form-control"
                                         maxLength="19"
                                         onInput={(e) => {
-                                            let val = e.target.value.replace(/\D/g, ''); // keep only digits
-                                            val = val.substring(0, 19); // max 19 digits
+                                            let val = e.target.value.replace(/\D/g, '');
+                                            val = val.substring(0, 19);
                                             let formatted = val.match(/.{1,4}/g)?.join(' ') || val;
                                             e.target.value = formatted;
                                         }}
@@ -442,13 +441,11 @@ export default function ApplicationForm({ params }) {
                                 </div>
                             )}
 
-                            {/* Postal Address */}
                             <div className="col-12">
                                 <label className="form-label">Postal Address:<span className="required-asterisk">*</span></label>
                                 <textarea name="postalAddress" className="form-control" rows="2" required></textarea>
                             </div>
 
-                            {/* State & City */}
                             <div className="col-md-6">
                                 <label className="form-label">State:<span className="required-asterisk">*</span></label>
                                 <CustomSelect name="state" onChange={handleStateChange} value={selectedState} required>
@@ -468,17 +465,15 @@ export default function ApplicationForm({ params }) {
                                 </CustomSelect>
                             </div>
 
-                            {/* Pin Code & Contact No */}
                             <div className="col-md-6">
                                 <label className="form-label">Pin Code:<span className="required-asterisk">*</span></label>
-                                <input type="text" name="pinCode" maxLength={6} className="form-control" required />
+                                <input type="text" name="pinCode" maxLength={6} className="form-control" onInput={(e) => { e.target.value = e.target.value.replace(/\D/g, ''); }} required />
                             </div>
                             <div className="col-md-6">
                                 <label className="form-label">Contact No:<span className="required-asterisk">*</span></label>
-                                <input type="text" name="contactNo" maxLength={10} className="form-control" required />
+                                <input type="text" name="contactNo" maxLength={10} className="form-control" onInput={(e) => { e.target.value = e.target.value.replace(/\D/g, ''); }} required />
                             </div>
 
-                            {/* Email & Profile Image */}
                             <div className="col-md-6">
                                 <label className="form-label">Email-id:<span className="required-asterisk">*</span></label>
                                 <input type="email" name="emailId" className="form-control" required />
@@ -488,14 +483,12 @@ export default function ApplicationForm({ params }) {
                                 <input type="file" name="profileImage" className="form-control" accept=".jpg, .jpeg" required />
                             </div>
 
-                            {/* Admission Registration Fee */}
                             <div className="col-md-6 mb-4">
                                 <label className="form-label">Admission Registration Fee:<span className="required-asterisk">*</span></label>
                                 <input type="text" className="form-control bg-light" value="500" readOnly />
                             </div>
                         </div>
 
-                        {/* Educational Qualification */}
                         <div className="mt-2 border rounded">
                             <div className="section-header">
                                 EDUCATIONAL QUALIFICATION  <span className='required-asterisk'>*</span>
@@ -517,12 +510,12 @@ export default function ApplicationForm({ params }) {
                                         <thead className="bg-light" style={{ fontSize: '13px' }}>
                                             <tr>
                                                 <th>Class</th>
-                                                <th>School</th>
-                                                <th>Board</th>
-                                                <th>Year</th>
-                                                <th>Grade/Percentage(%)</th>
-                                                <th>Medium</th>
-                                                <th>Certificate (pdf only)</th>
+                                                <th>School <span className="required-asterisk">*</span></th>
+                                                <th>Board <span className="required-asterisk">*</span></th>
+                                                <th>Year <span className="required-asterisk">*</span></th>
+                                                <th>Grade/Percentage(%) <span className="required-asterisk">*</span></th>
+                                                <th>Medium <span className="required-asterisk">*</span></th>
+                                                <th>Certificate (pdf only) <span className="required-asterisk">*</span></th>
                                             </tr>
                                         </thead>
                                     )}
@@ -531,8 +524,28 @@ export default function ApplicationForm({ params }) {
                                             <tr>
                                                 <td><input type="text" name="school_Degree" className="form-control form-control-sm" placeholder="e.g. B.Com" required /></td>
                                                 <td><input type="text" name="board_Degree" className="form-control form-control-sm" required /></td>
-                                                <td><input type="date" name="year_Degree" className="form-control form-control-sm" required /></td>
-                                                <td><input type="number" name="grade_Degree" className="form-control form-control-sm" min="0" max="100" step="0.01" onInput={(e) => { if (e.target.value > 100) e.target.value = 100; if (e.target.value < 0) e.target.value = 0; }} required /></td>
+                                                <td><input type="date" name="year_Degree" className="form-control form-control-sm" max={maxTodayString} required /></td>
+                                                <td>
+                                                    <input
+                                                        type="number"
+                                                        name="grade_Degree"
+                                                        className="form-control form-control-sm"
+                                                        min="0" max="100" step="0.1"
+                                                        onInput={(e) => {
+                                                            let val = e.target.value;
+                                                            if (val.includes('.')) {
+                                                                const parts = val.split('.');
+                                                                if (parts[1].length > 1) {
+                                                                    val = parts[0] + '.' + parts[1].substring(0, 1);
+                                                                }
+                                                            }
+                                                            if (parseFloat(val) > 100) val = '100';
+                                                            if (parseFloat(val) < 0) val = '0';
+                                                            e.target.value = val;
+                                                        }}
+                                                        required
+                                                    />
+                                                </td>
                                                 <td>
                                                     <CustomSelect name="medium_Degree" className="form-select-sm" style={{ paddingRight: '1.5rem' }} required>
                                                         <option value="">Select Medium</option>
@@ -545,15 +558,37 @@ export default function ApplicationForm({ params }) {
                                                 <td><input type="file" name="certificate_Degree" className="form-control form-control-sm" accept=".pdf,.jpg,.jpeg" required /></td>
                                             </tr>
                                         ) : (
-                                            <>
-                                                <tr>
-                                                    <td className="fw-bold">X</td>
-                                                    <td><input type="text" name="school_X" className="form-control form-control-sm" required /></td>
-                                                    <td><input type="text" name="board_X" className="form-control form-control-sm" required /></td>
-                                                    <td><input type="date" name="year_X" className="form-control form-control-sm" required /></td>
-                                                    <td><input type="number" name="grade_X" className="form-control form-control-sm" min="0" max="100" step="0.01" onInput={(e) => { if (e.target.value > 100) e.target.value = 100; if (e.target.value < 0) e.target.value = 0; }} required /></td>
+                                            (applicationFor === 'Degree' ? ['XI', 'X'] : ['X', 'IX']).map(cls => (
+                                                <tr key={cls}>
+                                                    <td className="fw-bold">{cls}</td>
+                                                    <td><input type="text" name={`school_${cls}`} className="form-control form-control-sm" required /></td>
+                                                    <td><input type="text" name={`board_${cls}`} className="form-control form-control-sm" required /></td>
+                                                    <td><input type="date" name={`year_${cls}`} className="form-control form-control-sm" max={maxTodayString} required /></td>
                                                     <td>
-                                                        <CustomSelect name="medium_X" className="form-select-sm" style={{ paddingRight: '1.5rem' }} required>
+                                                        <input
+                                                            type="number"
+                                                            name={`grade_${cls}`}
+                                                            className="form-control form-control-sm"
+                                                            min="0"
+                                                            max="100"
+                                                            step="0.1"
+                                                            onInput={(e) => {
+                                                                let val = e.target.value;
+                                                                if (val.includes('.')) {
+                                                                    const parts = val.split('.');
+                                                                    if (parts[1].length > 1) {
+                                                                        val = parts[0] + '.' + parts[1].substring(0, 1);
+                                                                    }
+                                                                }
+                                                                if (parseFloat(val) > 100) val = '100';
+                                                                if (parseFloat(val) < 0) val = '0';
+                                                                e.target.value = val;
+                                                            }}
+                                                            required
+                                                        />
+                                                    </td>
+                                                    <td>
+                                                        <CustomSelect name={`medium_${cls}`} className="form-select-sm" style={{ paddingRight: '1.5rem' }} required>
                                                             <option value="">Select</option>
                                                             <option value="Telugu">Telugu</option>
                                                             <option value="English">English</option>
@@ -561,33 +596,15 @@ export default function ApplicationForm({ params }) {
                                                             <option value="Urdu">Urdu</option>
                                                         </CustomSelect>
                                                     </td>
-                                                    <td><input type="file" name="certificate_X" className="form-control form-control-sm" accept=".pdf" required /></td>
+                                                    <td><input type="file" name={`certificate_${cls}`} className="form-control form-control-sm" accept=".pdf" required /></td>
                                                 </tr>
-                                                <tr>
-                                                    <td className="fw-bold">IX</td>
-                                                    <td><input type="text" name="school_IX" className="form-control form-control-sm" required /></td>
-                                                    <td><input type="text" name="board_IX" className="form-control form-control-sm" required /></td>
-                                                    <td><input type="date" name="year_IX" className="form-control form-control-sm" required /></td>
-                                                    <td><input type="number" name="grade_IX" className="form-control form-control-sm" min="0" max="100" step="0.01" onInput={(e) => { if (e.target.value > 100) e.target.value = 100; if (e.target.value < 0) e.target.value = 0; }} required /></td>
-                                                    <td>
-                                                        <CustomSelect name="medium_IX" className="form-select-sm" style={{ paddingRight: '1.5rem' }} required>
-                                                            <option value="">Select</option>
-                                                            <option value="Telugu">Telugu</option>
-                                                            <option value="English">English</option>
-                                                            <option value="Hindi">Hindi</option>
-                                                            <option value="Urdu">Urdu</option>
-                                                        </CustomSelect>
-                                                    </td>
-                                                    <td><input type="file" name="certificate_IX" className="form-control form-control-sm" accept=".pdf" required /></td>
-                                                </tr>
-                                            </>
+                                            ))
                                         )}
                                     </tbody>
                                 </table>
                             </div>
                         </div>
 
-                        {/* Qualifying Entrance Examination - Only for PG */}
                         {applicationFor === 'PG' && (
                             <div className="mt-4 border rounded">
                                 <div className="section-header">
@@ -597,11 +614,11 @@ export default function ApplicationForm({ params }) {
                                     <table className="table table-borderless align-middle mb-0" style={{ minWidth: '700px' }}>
                                         <thead className="bg-light" style={{ fontSize: '13px' }}>
                                             <tr>
-                                                <th>Examination<span className="required-asterisk">*</span></th>
-                                                <th>HT Number<span className="required-asterisk">*</span></th>
-                                                <th>Rank<span className="required-asterisk">*</span></th>
-                                                <th>Year<span className="required-asterisk">*</span></th>
-                                                <th>Certificate/Rank Card (pdf/jpg)<span className="required-asterisk">*</span></th>
+                                                <th>Examination <span className="required-asterisk">*</span></th>
+                                                <th>HT Number <span className="required-asterisk">*</span></th>
+                                                <th>Rank <span className="required-asterisk">*</span></th>
+                                                <th>Year <span className="required-asterisk">*</span></th>
+                                                <th>Certificate/Rank Card (pdf/jpg) <span className="required-asterisk">*</span></th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -609,7 +626,7 @@ export default function ApplicationForm({ params }) {
                                                 <td><input type="text" name="entranceExamName" className="form-control form-control-sm bg-light" value="ICET" readOnly required /></td>
                                                 <td><input type="text" name="entranceHtNumber" className="form-control form-control-sm" required /></td>
                                                 <td><input type="number" name="entranceRank" className="form-control form-control-sm" min="1" required /></td>
-                                                <td><input type="date" name="entranceYear" className="form-control form-control-sm" required /></td>
+                                                <td><input type="date" name="entranceYear" className="form-control form-control-sm" max={maxTodayString} required /></td>
                                                 <td><input type="file" name="entranceCertificate" className="form-control form-control-sm" accept=".pdf,.jpg,.jpeg" required /></td>
                                             </tr>
                                         </tbody>
@@ -618,11 +635,10 @@ export default function ApplicationForm({ params }) {
                             </div>
                         )}
 
-                        {/* Submit Buttons */}
                         <div className="text-center mt-4 mb-2">
                             <button type="reset" className="btn btn-primary px-4 me-2">Reset</button>
                             <button type="submit" className="btn btn-success px-4" disabled={isSubmitting}>
-                                {isSubmitting ? 'Saving...' : 'Save Application'}
+                                {isSubmitting ? 'Saving...' : 'Save and Next'}
                             </button>
                         </div>
                     </form>
