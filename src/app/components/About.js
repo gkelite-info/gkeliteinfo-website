@@ -13,7 +13,7 @@ const About = () => {
     useEffect(() => {
         AOS.init({
             once: true,
-            duration: 1000, // Adjust as needed
+            duration: 1000,
         });
     }, []);
 
@@ -27,13 +27,9 @@ const About = () => {
                     </div>
                 </div>
                 <section id="about" className="about section">
-
                     <div className="container">
-
                         <div className="row position-relative">
-
                             <div className="col-lg-7 about-img" data-aos="zoom-out" data-aos-delay="200"><img src="assets/img/about.jpg" /></div>
-
                             <div className="col-lg-7" data-aos="fade-up" data-aos-delay="100">
                                 <h2 className="inner-title fs-1">One Stop Solution...</h2>
                                 <div className="our-story">
@@ -44,12 +40,9 @@ const About = () => {
                                         <li><i className="bi bi-check-circle"></i> <span>Endorsement by Industry Leaders</span></li>
                                         <li><i className="bi bi-check-circle"></i> <span>Focus on Results and Efficiency</span></li>
                                     </ul>
-
                                 </div>
                             </div>
-
                         </div>
-
                     </div>
 
                 </section>
@@ -61,9 +54,9 @@ const About = () => {
                     </div>
 
                     <div className="our-story container" >
-                        <p>At GKelite, we proudly position ourselves as the ultimate one-stop powerhouse, endorsed by industry leaders, to accelerate business success! Our objectives are clear: </p>
-                        <h6 className="fw-bold">Talent Acquisition Excellence – GK Elite- Info Service help you secure the best talent, driving innovation and growth.</h6>
-                        <p>Talent Acquisition Excellence – At GKelite-Info Service, we are dedicated to securing top-tier talent that fuels innovation and business growth.</p>
+                        <p>At GK Elite-Info, we proudly position ourselves as the ultimate one-stop powerhouse, endorsed by industry leaders, to accelerate business success! Our objectives are clear: </p>
+                        <h6 className="fw-bold">Talent Acquisition Excellence – GK Elite-Info Service help you secure the best talent, driving innovation and growth.</h6>
+                        <p>Talent Acquisition Excellence – At GK Elite-Info Service, we are dedicated to securing top-tier talent that fuels innovation and business growth.</p>
                         {/* <ul>
                             <li><span>As one of the fastest-growing talent acquisition platforms, we are the preferred recruiting partner for numerous Fortune 500 companies.</span></li>
                             <li><span>We specialize in helping clients identify and acquire the right talent, perfectly matching skills with business needs.
@@ -82,8 +75,8 @@ const About = () => {
 
                         <p>Join us to experience recruitment success that drives your business forward!</p>
 
-                        <h6 className="fw-bold">Dynamic Digital Marketing Solutions – GK Elite- Info digital will Boost your brand visibility and skyrocket your online presence with cutting-edge strategies.</h6>
-                        <p>Dynamic Digital Marketing Solutions – Gk elite-Info Digital amplify your brand’s visibility and catapult your online presence to new heights with our cutting-edge, results-driven digital marketing strategies!</p>
+                        <h6 className="fw-bold">Dynamic Digital Marketing Solutions – GK Elite-Info digital will Boost your brand visibility and skyrocket your online presence with cutting-edge strategies.</h6>
+                        <p>Dynamic Digital Marketing Solutions – GK Elite-Info Digital amplify your brand’s visibility and catapult your online presence to new heights with our cutting-edge, results-driven digital marketing strategies!</p>
 
                         {/* <ul>
                             <li><span>GK elite is proudly endorsed by 25 visionary CEOs, all backing our mission to revolutionize businesses by bringing them into the vibrant world of digital marketing. We empower brands to grow, thrive, and become unstoppable forces in the digital space.</span></li>
@@ -94,7 +87,7 @@ const About = () => {
                         </ul> */}
 
                         <ul>
-                            <li><i className="bi bi-check-circle"></i> <span>GK elite is proudly endorsed by 25 visionary CEOs, all backing our mission to revolutionize businesses by bringing them into the vibrant world of digital marketing. We empower brands to grow, thrive, and become unstoppable forces in the digital space.</span></li>
+                            <li><i className="bi bi-check-circle"></i> <span>GK Elite-Info is proudly endorsed by 25 visionary CEOs, all backing our mission to revolutionize businesses by bringing them into the vibrant world of digital marketing. We empower brands to grow, thrive, and become unstoppable forces in the digital space.</span></li>
 
                             <li><i className="bi bi-check-circle"></i> <span>Our team is the epitome of youthful energy and expertise. With hands-on experience from top digital marketing firms, we’ve built a dynamic and innovative team that fuels the success of GKelite Digital.</span></li>
 
@@ -103,7 +96,7 @@ const About = () => {
                         </ul>
 
                         <p>
-                            Join us at GKeliteinfo, where brands don’t just compete—they dominate!
+                            Join us at GK Elite-Info, where brands don’t just compete—they dominate!
                         </p>
 
                         <h6 className="fw-bold">Global Lead Generation</h6>
@@ -160,18 +153,15 @@ const About = () => {
 
                 </section>
 
-                {/* Team Section */}
                 <section id="team" className="team section light-background">
                     <div className="container section-title" data-aos="fade-up">
                         <h2>Our Team</h2>
                         <p>Experienced Professionals Dedicated To Innovation</p>
                     </div>
 
-                    {/* Aligning team members towards the right */}
                     <div className="container">
                         <div>
                             <div className="row gy-4 mb-5" style={{ display: "flex", justifyContent: "center" }}>
-                                {/* Team Member 1 */}
                                 <div className="col-lg-3 col-md-6 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="100">
                                     <div className="team-member">
                                         <div className="member-img">
@@ -189,7 +179,6 @@ const About = () => {
 
                             </div>
                             <div className="row gy-4" style={{ display: "flex", justifyContent: "center" }}>
-                                {/* Team Member 2 */}
                                 <div className="col-lg-3 col-md-6 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="200">
                                     <div className="team-member">
                                         <div className="member-img">
@@ -206,7 +195,6 @@ const About = () => {
                                 </div>
 
 
-                                {/* Team Member 3 */}
                                 <div className="col-lg-3 col-md-6 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="400">
                                     <div className="team-member">
                                         <div className="member-img">
@@ -222,9 +210,7 @@ const About = () => {
                                     </div>
                                 </div>
                             </div>
-
                         </div>
-
                     </div>
                 </section>
             </main>

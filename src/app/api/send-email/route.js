@@ -17,7 +17,6 @@ export async function POST(request) {
     const currentDate = new Date();
     const formattedDate = `${String(currentDate.getDate()).padStart(2, '0')}-${currentDate.toLocaleString('en-US', { month: 'short' })}-${currentDate.getFullYear()}`;
 
-    // Call Resend API using standard fetch
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
@@ -25,7 +24,7 @@ export async function POST(request) {
         'Authorization': `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        from: 'Badruka Admissions <admissions@gkeliteinfo.com>', // Verified custom domain
+        from: 'Badruka Admissions <admissions@gkeliteinfo.com>',
         to: [emailId],
         subject: `Application Submitted Successfully - ${applicationNumber}`,
         html: `

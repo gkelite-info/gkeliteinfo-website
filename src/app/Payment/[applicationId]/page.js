@@ -7,15 +7,14 @@ import { toast, Toaster } from 'react-hot-toast';
 import Confetti from 'react-confetti';
 
 const PaymentPage = ({ params }) => {
-    // Unwrap params Promise for Next.js 15+
     const unwrappedParams = use(params);
     const { applicationId } = unwrappedParams;
     const router = useRouter();
 
     const [activeTab, setActiveTab] = useState('cards');
-    const [upiTimer, setUpiTimer] = useState(232); // 3:52 in seconds
+    const [upiTimer, setUpiTimer] = useState(232);
     const [qrExpired, setQrExpired] = useState(false);
-    
+
     const [isSuccess, setIsSuccess] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -28,9 +27,8 @@ const PaymentPage = ({ params }) => {
     const isFormValid = cardNumber.length === 19 && expiryDate.length === 5 && cvc.length >= 3 && cardHolderName.trim().length > 0;
 
     const handleCardNumberChange = (e) => {
-        let value = e.target.value.replace(/\D/g, ''); // remove non-digits
+        let value = e.target.value.replace(/\D/g, '');
         if (value.length > 16) value = value.slice(0, 16);
-        // Add space every 4 digits
         const formatted = value.replace(/(\d{4})/g, '$1 ').trim();
         setCardNumber(formatted);
     };
@@ -49,12 +47,10 @@ const PaymentPage = ({ params }) => {
         if (value.length > 4) value = value.slice(0, 4);
         setCvc(value);
     };
-    
-    // Simulate Order ID based on application ID (store in state to prevent regeneration)
+
     const [orderId] = useState(() => `${Math.floor(Math.random() * 100000000)}${applicationId}`);
     const amount = 500;
 
-    // Timer effect for UPI
     useEffect(() => {
         let interval;
         if (activeTab === 'upi' && !qrExpired && upiTimer > 0) {
@@ -132,8 +128,8 @@ const PaymentPage = ({ params }) => {
                     <p className="text-secondary mb-4" style={{ fontSize: '15px', lineHeight: '1.5' }}>
                         Your payment of <strong className="text-dark">₹{amount}</strong> has been successfully processed and recorded. Thank you for your application!
                     </p>
-                    <button 
-                        onClick={() => router.push('/')} 
+                    <button
+                        onClick={() => router.push('/')}
                         className="btn btn-primary fw-bold px-5 py-3 mt-2"
                         style={{ borderRadius: '50px', backgroundColor: '#007bff', border: 'none', transition: 'all 0.3s' }}
                     >
@@ -161,9 +157,8 @@ const PaymentPage = ({ params }) => {
     return (
         <main className="bg-light" style={{ minHeight: '100vh', padding: '40px 15px' }}>
             <Toaster position="top-right" />
-            
+
             <div className="container" style={{ maxWidth: '1000px' }}>
-                {/* Header */}
                 <div className="bg-white rounded p-3 mb-4 d-flex justify-content-between align-items-center shadow-sm">
                     <div className="d-flex align-items-center gap-3">
                         <div className="bg-light border rounded px-2 py-1 fw-bold text-secondary">
@@ -179,20 +174,18 @@ const PaymentPage = ({ params }) => {
                 </div>
 
                 <div className="row g-4">
-                    {/* Left Panel: Payment Methods */}
                     <div className="col-lg-8">
                         <div className="bg-white rounded shadow-sm overflow-hidden d-flex flex-column" style={{ minHeight: '500px' }}>
                             <div className="p-4 border-bottom">
                                 <h5 className="fw-bold m-0" style={{ color: '#1a1f36' }}>Payment Methods</h5>
                             </div>
-                            
+
                             <div className="d-flex flex-grow-1">
-                                {/* Vertical Tabs */}
                                 <div className="border-end" style={{ width: '250px', backgroundColor: '#fcfdfd' }}>
-                                    <div 
+                                    <div
                                         onClick={() => setActiveTab('cards')}
                                         className="p-3 border-bottom d-flex align-items-center gap-3 cursor-pointer"
-                                        style={{ 
+                                        style={{
                                             cursor: 'pointer',
                                             backgroundColor: activeTab === 'cards' ? '#fff' : 'transparent',
                                             borderLeft: activeTab === 'cards' ? '4px solid #ff5722' : '4px solid transparent',
@@ -203,9 +196,9 @@ const PaymentPage = ({ params }) => {
                                         <i className="bi bi-credit-card"></i>
                                         <span style={{ fontSize: '14px' }}>Credit / Debit Cards</span>
                                     </div>
-                                    <div 
+                                    <div
                                         className="p-3 border-bottom d-flex align-items-center gap-3"
-                                        style={{ 
+                                        style={{
                                             opacity: 0.6,
                                             backgroundColor: 'transparent',
                                             borderLeft: '4px solid transparent',
@@ -216,9 +209,9 @@ const PaymentPage = ({ params }) => {
                                         <i className="bi bi-bank"></i>
                                         <span style={{ fontSize: '14px' }}>Net Banking</span>
                                     </div>
-                                    <div 
+                                    <div
                                         className="p-3 border-bottom d-flex align-items-center gap-3"
-                                        style={{ 
+                                        style={{
                                             opacity: 0.6,
                                             backgroundColor: 'transparent',
                                             borderLeft: '4px solid transparent',
@@ -234,10 +227,8 @@ const PaymentPage = ({ params }) => {
                                     </div>
                                 </div>
 
-                                {/* Tab Content */}
                                 <div className="p-4 flex-grow-1" style={{ backgroundColor: '#fff' }}>
-                                    
-                                    {/* Cards Tab */}
+
                                     {activeTab === 'cards' && (
                                         <form onSubmit={handlePaymentSubmit}>
                                             <div className="d-flex justify-content-between align-items-center mb-4">
@@ -248,7 +239,7 @@ const PaymentPage = ({ params }) => {
                                                     <img src="https://img.icons8.com/color/48/000000/rupay.png" alt="Rupay" style={{ height: '24px', objectFit: 'contain' }} />
                                                 </div>
                                             </div>
-                                            
+
                                             <div className="border rounded mb-4 shadow-sm" style={{ borderColor: '#e2e8f0' }}>
                                                 <input type="text" className="form-control border-0 border-bottom shadow-none p-3" placeholder="Card number" required value={cardNumber} onChange={handleCardNumberChange} />
                                                 <div className="d-flex">
@@ -271,21 +262,20 @@ const PaymentPage = ({ params }) => {
                                         </form>
                                     )}
 
-                                    {/* Net Banking Tab */}
                                     {activeTab === 'netbanking' && (
                                         <div>
                                             <div className="position-relative mb-4">
                                                 <i className="bi bi-search position-absolute" style={{ top: '12px', left: '15px', color: '#8792a2' }}></i>
                                                 <input type="text" className="form-control shadow-none border rounded" placeholder="Search by bank name" style={{ padding: '10px 15px 10px 40px' }} />
                                             </div>
-                                            
+
                                             <div className="mb-4">
                                                 <span style={{ fontSize: '12px', color: '#8792a2' }}>Top banks</span>
                                                 <div className="row g-2 mt-2">
                                                     {topBanks.map(bank => (
                                                         <div key={bank.id} className="col-4">
                                                             <div className="border rounded p-3 text-center cursor-pointer hover-shadow" style={{ height: '90px', cursor: 'pointer' }} onClick={handlePaymentSubmit}>
-                                                                <img src={bank.logo} alt={bank.name} style={{ height: '20px', objectFit: 'contain', marginBottom: '10px' }} onError={(e) => {e.target.style.display='none'}} />
+                                                                <img src={bank.logo} alt={bank.name} style={{ height: '20px', objectFit: 'contain', marginBottom: '10px' }} onError={(e) => { e.target.style.display = 'none' }} />
                                                                 <div style={{ fontSize: '11px', lineHeight: '1.2' }}>{bank.name}</div>
                                                             </div>
                                                         </div>
@@ -297,7 +287,7 @@ const PaymentPage = ({ params }) => {
                                                 <span style={{ fontSize: '12px', color: '#8792a2' }}>All other banks</span>
                                                 <div className="mt-2 border rounded">
                                                     {otherBanks.map((bank, index) => (
-                                                        <div key={index} className={`d-flex justify-content-between align-items-center p-3 cursor-pointer hover-bg ${index !== otherBanks.length -1 ? 'border-bottom' : ''}`} style={{ cursor: 'pointer' }} onClick={handlePaymentSubmit}>
+                                                        <div key={index} className={`d-flex justify-content-between align-items-center p-3 cursor-pointer hover-bg ${index !== otherBanks.length - 1 ? 'border-bottom' : ''}`} style={{ cursor: 'pointer' }} onClick={handlePaymentSubmit}>
                                                             <div className="d-flex align-items-center gap-3">
                                                                 <div className="bg-light rounded-circle d-flex align-items-center justify-content-center" style={{ width: '30px', height: '30px' }}>
                                                                     <i className="bi bi-bank" style={{ color: '#ff5722' }}></i>
@@ -312,11 +302,10 @@ const PaymentPage = ({ params }) => {
                                         </div>
                                     )}
 
-                                    {/* UPI Tab */}
                                     {activeTab === 'upi' && (
                                         <div className="d-flex justify-content-center align-items-center h-100">
                                             <div className="border rounded p-4 d-flex gap-4 shadow-sm" style={{ maxWidth: '400px' }}>
-                                                
+
                                                 <div className="position-relative" style={{ width: '120px', height: '120px' }}>
                                                     {!qrExpired ? (
                                                         <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=test@okbizaxis" alt="QR Code" className="img-fluid" />
@@ -334,7 +323,7 @@ const PaymentPage = ({ params }) => {
                                                     <p className="text-secondary m-0 mt-1 mb-3" style={{ fontSize: '13px', lineHeight: '1.4' }}>
                                                         using your UPI app to make the payment
                                                     </p>
-                                                    
+
                                                     {!qrExpired && (
                                                         <div className="fw-bold mb-3" style={{ fontSize: '13px', color: '#1a1f36' }}>
                                                             Code expires in <span style={{ color: '#00a15d' }}>{formatTime(upiTimer)}</span>
@@ -356,7 +345,6 @@ const PaymentPage = ({ params }) => {
                         </div>
                     </div>
 
-                    {/* Right Panel: Summary */}
                     <div className="col-lg-4">
                         <div className="bg-white rounded shadow-sm p-4">
                             <div className="d-flex align-items-center gap-2 border-bottom pb-3 mb-3">
@@ -375,7 +363,7 @@ const PaymentPage = ({ params }) => {
                             </div>
 
                             <div className="d-flex justify-content-center mt-5">
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/4/42/Billdesk_logo.png" alt="BillDesk" style={{ height: '24px' }} onError={(e) => {e.target.style.display='none'}} />
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/4/42/Billdesk_logo.png" alt="BillDesk" style={{ height: '24px' }} onError={(e) => { e.target.style.display = 'none' }} />
                             </div>
                         </div>
                     </div>

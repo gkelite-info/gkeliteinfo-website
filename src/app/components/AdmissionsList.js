@@ -109,11 +109,10 @@ const AdmissionsList = ({ college }) => {
                 query = query.eq("contactNo", cleanMobile);
             }
 
-            // Filter by the specific type of application the user clicked on
             if (selectedApp && selectedApp.applyUrl) {
                 const applyUrlParts = selectedApp.applyUrl.split('/');
-                const formType = applyUrlParts[2]; // e.g. "Inter_Form"
-                
+                const formType = applyUrlParts[2];
+
                 if (formType === 'Inter_Form') {
                     query = query.eq('applicationFor', 'Inter');
                 } else if (formType === 'Degree_BCCA') {
@@ -153,7 +152,6 @@ const AdmissionsList = ({ college }) => {
 
             let paymentStatus = "Pending";
             if (payData && payData.length > 0) {
-                // If any payment is success
                 const hasSuccess = payData.some(p => p.paymentStatus && p.paymentStatus.toLowerCase() === 'success');
                 paymentStatus = hasSuccess ? "Success" : "Pending";
             }
@@ -175,12 +173,11 @@ const AdmissionsList = ({ college }) => {
     };
 
     if (viewedApplication) {
-        // Guess title based on course
         const appTitle = viewedApplication.lead?.course ? `${viewedApplication.lead.course} Application` : "Application";
-        
+
         return (
             <div className="bg-light" style={{ minHeight: '100vh', padding: '1px 0' }}>
-                <ApplicationSummary 
+                <ApplicationSummary
                     lead={viewedApplication.lead}
                     qualifications={viewedApplication.qualifications}
                     title={appTitle}
@@ -297,7 +294,6 @@ const AdmissionsList = ({ college }) => {
                     )}
                 </div>
 
-                {/* View Application Modal */}
                 {showModal && (
                     <div className="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)", zIndex: 1050 }}>
                         <div className="bg-white rounded shadow w-100 m-3" style={{ maxWidth: "500px", border: "1px solid #dee2e6" }}>

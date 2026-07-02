@@ -12,7 +12,7 @@ const ClientPage = () => {
     useEffect(() => {
         AOS.init({
             once: true,
-            duration: 1000, // Adjust as needed
+            duration: 1000,
         });
     }, []);
 
@@ -27,18 +27,14 @@ const ClientPage = () => {
                 </div>
 
                 <section id="about" className="about section">
-
                     <div className="container">
-
                         <div className="row position-relative">
-
                             <div className="col-lg-7 about-img" data-aos="zoom-out" data-aos-delay="200"><img src="assets/img/about.jpg" /></div>
-
                             <div className="col-lg-7" data-aos="fade-up" data-aos-delay="100">
                                 <h2 className="inner-title">One Stop Solution...</h2>
                                 <div className="our-story">
                                     <h3>About Us</h3>
-                                    <p>GKeliteinfo is an innovative startup, recognized and endorsed by 25 leading CEOs as the ultimate one-stop solution for all your business needs. Our cutting-edge services are designed to streamline operations, boost growth, and deliver unparalleled value to enterprises looking for efficient, effective solutions.</p>
+                                    <p>GK Elite-Info is an innovative startup, recognized and endorsed by 25 leading CEOs as the ultimate one-stop solution for all your business needs. Our cutting-edge services are designed to streamline operations, boost growth, and deliver unparalleled value to enterprises looking for efficient, effective solutions.</p>
                                     <ul>
                                         <li><i className="bi bi-check-circle"></i> <span>Comprehensive Business Solutions</span></li>
                                         <li><i className="bi bi-check-circle"></i> <span>Endorsement by Industry Leaders</span></li>
