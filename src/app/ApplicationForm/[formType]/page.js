@@ -98,12 +98,6 @@ export default function ApplicationForm({ params }) {
         }
     };
 
-    const handleReset = () => {
-        setSelectedState('');
-        setCities([]);
-        toast.success("Reset Successful.");
-    };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
@@ -361,7 +355,7 @@ export default function ApplicationForm({ params }) {
                 </div>
 
                 <div className="p-4">
-                    <form onSubmit={handleSubmit} onReset={handleReset}>
+                    <form onSubmit={handleSubmit}>
                         <div className="row g-3">
                             <div className="col-md-6">
                                 <label className="form-label">Application For:<span className="required-asterisk">*</span></label>
