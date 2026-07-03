@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState, useEffect, use } from 'react';
+import React, { useState, useEffect, use, useRef } from 'react';
 import { CaretDown } from "@phosphor-icons/react";
 import { State, City } from 'country-state-city';
-import { toast, Toaster } from 'react-hot-toast';
-import { saveLeadApplication, uploadApplicationFile } from '../../../lib/helpers/education/leads';
+import { toast } from 'react-hot-toast';
+import { saveLeadApplication, uploadApplicationFile, saveDraftApplication, getDraftApplication } from '../../../lib/helpers/education/leads';
 import { useRouter, useSearchParams } from 'next/navigation';
 import ApplicationSummary from '../../components/ApplicationSummary';
 
@@ -54,16 +54,77 @@ export default function ApplicationForm({ params }) {
     const [submittedRefNo, setSubmittedRefNo] = useState(null);
     const [submittedEmail, setSubmittedEmail] = useState(null);
     const [submittedData, setSubmittedData] = useState(null);
+    const [isDrafting, setIsDrafting] = useState(false);
+    const [showDraftModal, setShowDraftModal] = useState(false);
+    const [draftEmail, setDraftEmail] = useState('');
+    const [draftContactNo, setDraftContactNo] = useState('');
     const router = useRouter();
     const searchParams = useSearchParams();
     const selectedCollege = searchParams.get('college') || '';
+    const resumeDraftId = searchParams.get('resume') || null;
+    const hasLoadedDraft = useRef(false);
 
     const [selectedState, setSelectedState] = useState('');
     const [cities, setCities] = useState([]);
 
     useEffect(() => {
         setMounted(true);
-    }, []);
+        if (resumeDraftId && !hasLoadedDraft.current) {
+            hasLoadedDraft.current = true;
+            loadDraft();
+        }
+    }, [resumeDraftId]);
+
+    const loadDraft = async () => {
+        const toastId = toast.loading('Loading draft application...');
+        const res = await getDraftApplication(resumeDraftId);
+        if (res.success && res.data) {
+            const formData = res.data.formData;
+            // Pre-fill the form using DOM elements
+            setTimeout(() => {
+                try {
+                    const form = document.getElementById('application-form');
+                    if (form) {
+                        Object.keys(formData).forEach(key => {
+                            const input = form.elements[key];
+                            if (input) {
+                                if (input.type === 'radio' || input.type === 'checkbox') {
+                                    if (input.length) {
+                                        // Radio group
+                                        Array.from(input).forEach(radio => {
+                                            if (radio.value === formData[key]) radio.checked = true;
+                                        });
+                                    } else {
+                                        input.checked = (input.value === formData[key] || formData[key] === 'on' || formData[key] === true);
+                                    }
+                                } else if (input.type !== 'file' && input.value !== undefined) {
+                                    input.value = formData[key];
+                                } else if (input.length !== undefined && input.value !== undefined) {
+                                    // Handle RadioNodeList directly assigning value
+                                    input.value = formData[key];
+                                }
+                            }
+                        });
+
+                        if (formData.state) {
+                            setSelectedState(formData.state);
+                            setCities(City.getCitiesOfState('IN', formData.state));
+                        }
+                        if (formData.emailId) setDraftEmail(formData.emailId);
+                        if (formData.contactNo) setDraftContactNo(formData.contactNo);
+                    }
+                } catch (err) {
+                    console.error("Error pre-filling form:", err);
+                } finally {
+                    toast.dismiss(toastId);
+                    setTimeout(() => toast.success('Draft loaded. Files must be re-uploaded.'), 100);
+                }
+            }, 500); // small delay to let DOM render
+        } else {
+            toast.dismiss(toastId);
+            toast.error('Failed to load draft or draft not found.');
+        }
+    };
 
     useEffect(() => {
         try {
@@ -96,6 +157,55 @@ export default function ApplicationForm({ params }) {
         } else {
             setCities([]);
         }
+    };
+
+    const handleSaveDraft = async () => {
+        const form = document.getElementById('application-form');
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+
+        let email = draftEmail || data.emailId;
+        let contact = draftContactNo || data.contactNo;
+
+        if (!email) {
+            setShowDraftModal(true);
+            return;
+        }
+
+        setIsDrafting(true);
+        const toastId = toast.loading('Saving draft...');
+
+        // Remove file objects from draft JSON
+        Object.keys(data).forEach(key => {
+            if (data[key] instanceof File) {
+                delete data[key];
+            }
+        });
+
+        const res = await saveDraftApplication(email, formType, data, contact);
+
+        if (res.success) {
+            // Use gkeliteinfo.com instead of window.location.origin
+            const baseUrl = 'https://gkeliteinfo.com';
+            const resumeUrl = `${baseUrl}${window.location.pathname}?resume=${res.draftId}`;
+
+            // Send email
+            try {
+                await fetch('/api/send-draft-email', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ emailId: email, formType, draftId: res.draftId, resumeUrl })
+                });
+                toast.success('Draft saved! A link to resume has been sent to your email.', { id: toastId, duration: 5000 });
+                setShowDraftModal(false);
+            } catch (err) {
+                toast.success('Draft saved, but failed to send email. Save this URL: ' + resumeUrl, { id: toastId, duration: 10000 });
+                console.error(err);
+            }
+        } else {
+            toast.error('Failed to save draft.', { id: toastId });
+        }
+        setIsDrafting(false);
     };
 
     const handleSubmit = async (e) => {
@@ -319,7 +429,6 @@ export default function ApplicationForm({ params }) {
 
     return (
         <main className="bg-light py-5" style={{ minHeight: '100vh' }}>
-            <Toaster position="top-right" />
             <style jsx global>{`
                 .form-label {
                     font-size: 14px;
@@ -355,7 +464,37 @@ export default function ApplicationForm({ params }) {
                 </div>
 
                 <div className="p-4">
-                    <form onSubmit={handleSubmit}>
+                    {showDraftModal && (
+                        <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+                            <div className="modal-dialog modal-dialog-centered">
+                                <div className="modal-content">
+                                    <div className="modal-header">
+                                        <h5 className="modal-title">Save Draft Application</h5>
+                                        <button type="button" className="btn-close" onClick={() => setShowDraftModal(false)}></button>
+                                    </div>
+                                    <div className="modal-body">
+                                        <p>Please enter your email address to receive a link to resume this application later.</p>
+                                        <div className="mb-3">
+                                            <label className="form-label">Email Address <span className="text-danger">*</span></label>
+                                            <input type="email" className="form-control" value={draftEmail} onChange={e => setDraftEmail(e.target.value)} placeholder="Enter email" required />
+                                        </div>
+                                        <div className="mb-3">
+                                            <label className="form-label">Contact No</label>
+                                            <input type="text" className="form-control" value={draftContactNo} onChange={e => setDraftContactNo(e.target.value)} placeholder="Enter mobile number" />
+                                        </div>
+                                    </div>
+                                    <div className="modal-footer">
+                                        <button type="button" className="btn btn-secondary" onClick={() => setShowDraftModal(false)}>Cancel</button>
+                                        <button type="button" className="btn btn-primary" onClick={handleSaveDraft} disabled={!draftEmail || isDrafting}>
+                                            {isDrafting ? 'Saving...' : 'Send Resume Link'}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    <form id="application-form" onSubmit={handleSubmit}>
                         <div className="row g-3">
                             <div className="col-md-6">
                                 <label className="form-label">Application For:<span className="required-asterisk">*</span></label>
@@ -648,9 +787,12 @@ export default function ApplicationForm({ params }) {
                             </div>
                         )}
 
-                        <div className="text-center mt-4 mb-2">
-                            <button type="reset" className="btn btn-primary px-4 me-2">Reset</button>
-                            <button type="submit" className="btn btn-success px-4" disabled={isSubmitting}>
+                        <div className="text-center mt-4 mb-2 d-flex justify-content-center gap-2">
+                            <button type="reset" className="btn btn-primary px-4">Reset</button>
+                            <button type="button" className="btn btn-secondary px-4" onClick={handleSaveDraft} disabled={isSubmitting || isDrafting}>
+                                {isDrafting ? 'Saving...' : 'Draft'}
+                            </button>
+                            <button type="submit" className="btn btn-success px-4" disabled={isSubmitting || isDrafting}>
                                 {isSubmitting ? 'Saving...' : 'Save and Next'}
                             </button>
                         </div>

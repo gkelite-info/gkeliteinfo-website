@@ -111,3 +111,82 @@ export async function saveLeadApplication(payload) {
     return { success: false, error };
   }
 }
+
+/**
+ * Saves or updates a draft application.
+ * 
+ * @param {string} emailId - User's email ID.
+ * @param {string} formType - Type of the form (e.g., 'Inter_Form').
+ * @param {Object} formData - JSON representation of the form data.
+ * @param {string} contactNo - User's contact number (optional).
+ * @returns {Promise<{success: boolean, draftId?: string, error?: any}>}
+ */
+export async function saveDraftApplication(emailId, formType, formData, contactNo = '') {
+  try {
+    const now = new Date().toISOString();
+    const payload = {
+      emailId,
+      formType,
+      formData,
+      contactNo,
+      updatedAt: now
+    };
+
+    // Check if a draft already exists for this email and form type
+    const { data: existingDraft, error: fetchError } = await supabase
+      .from('draft_applications')
+      .select('draftId')
+      .eq('emailId', emailId)
+      .eq('formType', formType)
+      .maybeSingle();
+
+    if (fetchError) throw fetchError;
+
+    if (existingDraft) {
+      const { data, error } = await supabase
+        .from('draft_applications')
+        .update(payload)
+        .eq('draftId', existingDraft.draftId)
+        .select('draftId')
+        .single();
+      
+      if (error) throw error;
+      return { success: true, draftId: data.draftId };
+    } else {
+      payload.createdAt = now;
+      const { data, error } = await supabase
+        .from('draft_applications')
+        .insert([payload])
+        .select('draftId')
+        .single();
+        
+      if (error) throw error;
+      return { success: true, draftId: data.draftId };
+    }
+  } catch (error) {
+    console.error("saveDraftApplication error:", error);
+    return { success: false, error };
+  }
+}
+
+/**
+ * Fetches a draft application by its ID.
+ * 
+ * @param {string} draftId - The draft UUID.
+ * @returns {Promise<{success: boolean, data?: any, error?: any}>}
+ */
+export async function getDraftApplication(draftId) {
+  try {
+    const { data, error } = await supabase
+      .from('draft_applications')
+      .select('*')
+      .eq('draftId', draftId)
+      .single();
+
+    if (error) throw error;
+    return { success: true, data };
+  } catch (error) {
+    console.error("getDraftApplication error:", error);
+    return { success: false, error };
+  }
+}
